@@ -5,10 +5,10 @@ var color = ['#ca0020','#1f78b4','#a6611a','#33a02c'];
 // Functions
 function makeAllLineCharts(csvFile) {
     var margin = {top: 20, right: 20, bottom: 30, left: 50};
-    makeOneLineChart(csvFile, margin, 'timestamp', 'jamming_indicator', '#line1', color[0]);
-    makeOneLineChart(csvFile, margin, 'timestamp', 'alt', '#line2', color[1]);
-    makeOneLineChart(csvFile, margin, 'timestamp', 'noise', '#line3', color[2]);
-    makeOneLineChart(csvFile, margin, 'timestamp', 'rssi', '#line4', color[3]);
+    makeOneLineChart(csvFile, margin, 'time', 'jamming_indicator', '#line1', color[0]);
+    makeOneLineChart(csvFile, margin, 'time', 'alt', '#line2', color[1]);
+    makeOneLineChart(csvFile, margin, 'time', 'noise', '#line3', color[2]);
+    makeOneLineChart(csvFile, margin, 'time', 'rssi', '#line4', color[3]);
 }
 
 function makeOneLineChart(csvFile, margin, xField, yField, divId, colr) {
@@ -20,7 +20,7 @@ function makeOneLineChart(csvFile, margin, xField, yField, divId, colr) {
     var parseTime = d3.timeFormat("%M%S");
 
     // Set the ranges
-    var x = d3.scaleTime().range([0, width]);
+    var x = d3.scaleLinear().range([0, width]);
     var y = d3.scaleLinear().range([height, 0]);
 
     // Define the axes
@@ -51,13 +51,15 @@ function makeOneLineChart(csvFile, margin, xField, yField, divId, colr) {
     // Get the data
     d3.csv(csvFile, function(error, data) {
         data.forEach(function(d) {
-            var seconds = Math.floor(d[xField] / 1000000);
-            var date = new Date();
-            d[xField] = parseTime(new Date(0,0,0,0,0,seconds));
+            // var seconds = Math.floor(d[xField] / 1000000);
+            // var date = new Date();
+            // d[xField] = +parseTime(new Date(0,0,0,0,0,d[xField]));
+            d[xField] = +d[xField];
             d[yField] = +d[yField];
         });
         // Scale the range of the data
-        x.domain(d3.extent(data, function (d) { return d[xField]; }));
+        // x.domain(d3.extent(data, function (d) { return d[xField]; }));
+        x.domain([0, d3.max(data, function (d) { return d[xField]; })]);
         y.domain([0, d3.max(data, function (d) { return d[yField]; })]);
 
        // Add the line
