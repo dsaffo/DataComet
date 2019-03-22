@@ -1,0 +1,18 @@
+\BOOKMARK [1][]{section.2}{Introduction}{}% 1
+\BOOKMARK [1][]{section.4}{Related Work}{}% 2
+\BOOKMARK [1][]{section.5}{Process}{}% 3
+\BOOKMARK [2][]{subsection.6}{Dataset}{section.5}% 4
+\BOOKMARK [2][]{subsection.7}{Data Filtering and Preprocessing}{section.5}% 5
+\BOOKMARK [2][]{subsection.8}{Map Embeddings}{section.5}% 6
+\BOOKMARK [2][]{subsection.9}{Visualizing Trajectories}{section.5}% 7
+\BOOKMARK [2][]{subsection.10}{Plotting Charts and Graphs}{section.5}% 8
+\BOOKMARK [2][]{subsection.11}{Brushing and Linking}{section.5}% 9
+\BOOKMARK [1][]{section.12}{Design}{}% 10
+\BOOKMARK [2][]{subsection.13}{Encodings}{section.12}% 11
+\BOOKMARK [2][]{subsection.14}{Color and Shape Choices}{section.12}% 12
+\BOOKMARK [2][]{subsection.15}{Data\046Ink Redundancy}{section.12}% 13
+\BOOKMARK [1][]{section.16}{Discussion}{}% 14
+\BOOKMARK [2][]{subsection.17}{Challenges and Limitations}{section.16}% 15
+\BOOKMARK [2][]{subsection.18}{Future Work}{section.16}% 16
+\BOOKMARK [1][]{section.19}{Conclusion}{}% 17
+\BOOKMARK [1][]{section.20}{References}{}% 18
