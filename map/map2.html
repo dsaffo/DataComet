@@ -20,21 +20,32 @@
   <div id="map-canvas"></div>
     
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js"></script>
+    
 <script src="https://d3js.org/d3.v4.min.js"></script>
 <script src="L.D3SvgOverlay.js"></script>
+    
 <script src="https://d3js.org/d3-selection-multi.v0.4.min.js"></script>
-
+<script src="line-charts.js"></script>
 <div id='timeline_div'>
   <svg width="1360" height="150" id='timeline'></svg>
 </div>
 <div id='graph_div'>
   <svg width="570" height="350" id='graph'></svg>
+  <div id="line1"></div>
+        <br>
+        <div id="line2"></div>
+        <br>
+        <div id="line3"></div>
+        <br>
+        <div id="line4"></div>
 </div>
 <script src="timeline.js"></script>
+<script src="//d3js.org/d3-scale-chromatic.v0.3.min.js"></script>
 
 
 <script>
     
+
 var map = L.map("map-canvas",{center:[32.3873506, -117.0765251],zoom:15,maxZoom:25,minZoom:10});
 var Esri_WorldTopoMap = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
 	attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community'
@@ -42,12 +53,16 @@ var Esri_WorldTopoMap = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/
 Esri_WorldTopoMap.addTo(map);
 var cities = [];
 var citiesOverlay = L.d3SvgOverlay(function(sel,proj){
-  var minLogPop = Math.log2(d3.min(cities,function(d){return d.population;}));
+    
+ var colorScale = d3.scaleSequential(d3.interpolateReds).domain([d3.min(cities,function(d){return d.remaining}),d3.max(cities,function(d){return d.remaining})]);
+
+
+    
   var citiesUpd = sel.selectAll('line').data(cities);
-    size = 2 / proj.scale;
+    size = 1 / (proj.scale/2);
   citiesUpd.enter()
     .append('line')
-    .attr('stroke','red')
+    .attr('stroke',function(d){ return colorScale(d.remaining);})
     .attr('stroke-width', function(d){ return size})
     .attr('x1',function(d){return proj.latLngToLayerPoint(d.startlatLng).x;})
     .attr('y1',function(d){return proj.latLngToLayerPoint(d.startlatLng).y;})
