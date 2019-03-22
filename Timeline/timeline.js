@@ -2,8 +2,8 @@
 function create_timeline(filename, x_attr, y_attr) {
 
     var svg = d3.select("svg"),
-    margin = {top: 20, right: 20, bottom: 110, left: 40},
-    margin2 = {top: 430, right: 20, bottom: 30, left: 40},
+    margin = {top: 20, right: 20, bottom: 210, left: 40},
+    margin2 = {top: 630, right: 20, bottom: 20, left: 40},
     width = +svg.attr("width") - margin.left - margin.right,
     height = +svg.attr("height") - margin.top - margin.bottom,
     height2 = +svg.attr("height") - margin2.top - margin2.bottom;
@@ -97,12 +97,12 @@ function create_timeline(filename, x_attr, y_attr) {
             .call(brush)
             .call(brush.move, x.range());
       
-        svg.append("rect")
-            .attr("class", "zoom")
-            .attr("width", width)
-            .attr("height", height)
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-            .call(zoom);
+        // svg.append("rect")
+        //     .attr("class", "zoom")
+        //     .attr("width", width)
+        //     .attr("height", height)
+        //     .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+        //     .call(zoom);
       
         console.log(data);
       });
@@ -110,12 +110,17 @@ function create_timeline(filename, x_attr, y_attr) {
     function brushed() {
         if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return; // ignore brush-by-zoom
         var s = d3.event.selection || x2.range();
+        // console.log(s.map(x2.invert, x2));
         x.domain(s.map(x2.invert, x2));
         Line_chart.select(".line").attr("d", line);
         focus.select(".axis--x").call(xAxis);
         svg.select(".zoom").call(zoom.transform, d3.zoomIdentity
             .scale(width / (s[1] - s[0]))
             .translate(-s[0], 0));
+
+        // Create an event that states the updated selected timeline range 
+        var evt = new CustomEvent('timeline_update', { detail: [Math.floor(s.map(x2.invert, x2)[0]), Math.floor(s.map(x2.invert, x2)[1])] });
+        window.dispatchEvent(evt);
     }
     
     function zoomed() {
@@ -125,7 +130,16 @@ function create_timeline(filename, x_attr, y_attr) {
         Line_chart.select(".line").attr("d", line);
         focus.select(".axis--x").call(xAxis);
         context.select(".brush").call(brush.move, x.range().map(t.invertX, t));
+
+        // Create an event that states the updated selected timeline range 
+        var evt = new CustomEvent('timeline_update', { detail: [Math.floor(t.rescaleX(x2).domain()[0]), Math.floor(t.rescaleX(x2).domain()[1])] });
+        window.dispatchEvent(evt);
     }
+
+    // Event listener
+    window.addEventListener('timeline_update', function (e) {
+        console.log('Timeline range changed to:', e.detail);
+    });
 
     function type(d) {
         d[x_attr] = +d[x_attr];
@@ -133,6 +147,71 @@ function create_timeline(filename, x_attr, y_attr) {
         return d;
     }
 
+    // const focus_line = svg.append('g')
+    //     .attr('class', 'focus_line')
+    //     .style('display', 'none');
+  
+    // focus_line.append('circle')
+    //     .attr('r', 4.5);
+
+    // focus_line.append('line')
+    //     .classed('x', true);
+
+    // d3.selectAll('.focus_line')
+    //   .style('opacity', 0.7);
+
+    // d3.selectAll('.focus_line circle')
+    //   .styles({
+    //     fill: 'none',
+    //     stroke: 'black'
+    //   });
+
+    // d3.selectAll('.focus_line line')
+    //   .styles({
+    //     fill: 'none',
+    //     'stroke': 'black',
+    //     'stroke-width': '1.5px',
+    //     'stroke-dasharray': '3 3'
+    // });
+
+    // svg.append('rect')
+    //   .attr('class', 'overlay')
+    //   .attr('width', width)
+    //   .attr('height', height)
+    //   .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+    //   .on('mouseover', () => focus_line.style('display', null))
+    //   .on('mouseout', () => focus_line.style('display', 'none'))
+    //   .on('mousemove', mousemove);
+
+    // d3.select('.overlay')
+    //     .styles({
+    //     fill: 'none',
+    //     'pointer-events': 'all'
+    // });
+
+    // function mousemove() {
+    //     console.log("I am called");
+    //     console.log(x.invert(d3.mouse(this)[0]))
+        // const x0 = x.invert(d3.mouse(this)[0]);
+        // const i = bisectDate(data, x0, 1);
+        // const d0 = data[i - 1];
+        // const d1 = data[i];
+        // const d = x0 - d0.date > d1.date - x0 ? d1 : d0;
+        // focus_line.attr('transform', `translate(${x(d.date)}, ${y(d.close)})`);
+        // focus_line.select('line.x')
+        //   .attr('x1', 0)
+        //   .attr('x2', -x(d.date))
+        //   .attr('y1', 0)
+        //   .attr('y2', 0);
+  
+        // focus_line.select('line.y')
+        //   .attr('x1', 0)
+        //   .attr('x2', 0)
+        //   .attr('y1', 0)
+        //   .attr('y2', height - y(d.close));
+  
+        // focus_line.select('text').text(formatCurrency(d.close));
+//       }
 }
 
 // Create a timeline visualization
