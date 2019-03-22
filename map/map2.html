@@ -6,11 +6,14 @@
     <style type="text/css">
         html { height: 100% }
         body { height: 100%; margin: 0; padding: 0 }
-        #map-canvas { height: 80%; width: 70%;}
+        #map-canvas { height: 80%; width: 70%; float:left;}
+        #graph_div {height:80%; width: 30%; float:right;}
+        #timeline_div {height: 20%; width: 70%;}
     </style>
     <link href='https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.css'
     	rel='stylesheet' type='text/css'/>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <link rel="stylesheet" type="text/css" href="timeline.css">
 
 </head>
 <body>
@@ -19,6 +22,17 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js"></script>
 <script src="https://d3js.org/d3.v4.min.js"></script>
 <script src="L.D3SvgOverlay.js"></script>
+<script src="https://d3js.org/d3-selection-multi.v0.4.min.js"></script>
+
+<div id='timeline_div'>
+  <svg width="1360" height="150" id='timeline'></svg>
+</div>
+<div id='graph_div'>
+  <svg width="570" height="350" id='graph'></svg>
+</div>
+<script src="timeline.js"></script>
+
+
 <script>
     
 var map = L.map("map-canvas",{center:[32.3873506, -117.0765251],zoom:15,maxZoom:25,minZoom:10});
@@ -34,7 +48,7 @@ var citiesOverlay = L.d3SvgOverlay(function(sel,proj){
   citiesUpd.enter()
     .append('line')
     .attr('stroke','red')
-    .attr('stroke-width', function(d){console.log(size); return size})
+    .attr('stroke-width', function(d){ return size})
     .attr('x1',function(d){return proj.latLngToLayerPoint(d.startlatLng).x;})
     .attr('y1',function(d){return proj.latLngToLayerPoint(d.startlatLng).y;})
     .attr('x2',function(d){return proj.latLngToLayerPoint(d.endlatLng).x;})
@@ -49,14 +63,18 @@ d3.csv("milestone3.csv",function(data){
     endlon =  d.lon/10000000 
     d.startlatLng = [+startlat,+startlon];    
     d.endlatLng = [+endlat,+endlon];
-    console.log("start",startlat,startlon)
-    console.log("end",endlat,endlon)
+    // console.log("start",startlat,startlon)
+    // console.log("end",endlat,endlon)
     startlat = endlat
     startlon = endlon
     return d;
   });
  citiesOverlay.addTo(map);
-});    
+});
+
+window.addEventListener('timeline_update', function (e) {
+        console.log('Timeline range changed to:', e.detail);
+    });
 </script>
     
     
