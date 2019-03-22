@@ -1,0 +1,9 @@
+depart,arrivee,niv_depart,niv_arrivee,qte,dist,lat_depart,lon_depart,lat_arrivee,lon_arrivee,co2
+CDC DE CAPTIEUX-GRIGNOLS,Centre de transfert de Fargues,0,1,1179,31.6,,,44.5322,-0.271783,
+CDC DE CESTAS-CANEJAN,Centre de transfert de Pompignac,0,1,6046.84,28.3,,,44.864895,-0.447177,
+CDC DE MONTESQUIEU,UIOM de Bègles - ASTRIA,0,2,9054.34,33.8,,,44.784434,-0.582964,
+CDC DE VILLANDRAUT,Centre de transfert de Fargues,0,1,1011,13.9,,,44.5322,-0.271783,
+CDC DU BAZADAIS,Centre de transfert de Fargues,0,1,2430,20.3,,,44.5322,-0.271783,
+CDC DU CANTON DE PODENSAC,UIOM de Bègles - ASTRIA,0,2,5022.58,40.9,,,44.784434,-0.582964,
+CDC DU PAYS DE PAROUPIAN,Centre de transfert de Fargues,0,1,1082,8.3,,,44.5322,-0.271783,
+CDC DU VAL DE L'EYRE,UIOM de Bègles - ASTRIA,0,2,3923.52,54.2,,,44.784434,-0.582964,
