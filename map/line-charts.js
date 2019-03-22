@@ -4,11 +4,11 @@ var color = ['#ca0020','#1f78b4','#a6611a','#33a02c'];
 
 // Functions
 function makeAllLineCharts(csvFile) {
-    var margin = {top: 20, right: 20, bottom: 30, left: 100};
+    var margin = {top: 20, right: 20, bottom: 30, left: 60};
     makeOneLineChart(csvFile, margin, 'time', 'jamming_indicator', '#line1', color[0]);
-    makeOneLineChart(csvFile, margin, 'time', 'alt', '#line2', color[1]);
-    makeOneLineChart(csvFile, margin, 'time', 'noise', '#line3', color[2]);
-    makeOneLineChart(csvFile, margin, 'time', 'rssi', '#line4', color[3]);
+    makeOneLineChart(csvFile, margin, 'time', 'alt', '#line2', color[3]);
+    // makeOneLineChart(csvFile, margin, 'time', 'noise', '#line3', color[2]);
+    // makeOneLineChart(csvFile, margin, 'time', 'rssi', '#line4', color[3]);
 }
 
 function makeOneLineChart(csvFile, margin, xField, yField, divId, colr) {
@@ -40,7 +40,8 @@ function makeOneLineChart(csvFile, margin, xField, yField, divId, colr) {
         .append("text")
             .attr("class", "title")
             .style('color', colr)
-            .style('margin', width/2 - margin.right)
+            .style('text-align', 'center')
+            .style('margin-left', '120px')
             .text(title)
         .append("svg")
             .attr("width", width + margin.left + margin.right)
