@@ -97,12 +97,12 @@ function create_timeline(filename, x_attr, y_attr) {
             .call(brush)
             .call(brush.move, x.range());
       
-        svg.append("rect")
-            .attr("class", "zoom")
-            .attr("width", width)
-            .attr("height", height)
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-            .call(zoom);
+        // svg.append("rect")
+        //     .attr("class", "zoom")
+        //     .attr("width", width)
+        //     .attr("height", height)
+        //     .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+        //     .call(zoom);
       
         console.log(data);
       });
