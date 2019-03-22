@@ -17,21 +17,21 @@ function makeOneLineChart(csvFile, margin, xField, yField, divId, colr) {
     var height = 280 - margin.top - margin.bottom;
     var title = "Title: " + xField + " vs " + yField;
     // Parse the timestamp
-    var parseTime = d3.time.format("%M%S");
+    var parseTime = d3.timeFormat("%M%S");
 
     // Set the ranges
-    var x = d3.time.scale().range([0, width]);
-    var y = d3.scale.linear().range([height, 0]);
+    var x = d3.scaleTime().range([0, width]);
+    var y = d3.scaleLinear().range([height, 0]);
 
     // Define the axes
-    var xAxis = d3.svg.axis().scale(x)
-        .orient("bottom");
+    var xAxis = d3.axisBottom(x);
+        // .orient("bottom");
 
-    var yAxis = d3.svg.axis().scale(y)
-        .orient("left").ticks(10);
+    var yAxis = d3.axisLeft(y)
+        .ticks(10);
 
     // Define the line
-    var valueline = d3.svg.line()
+    var valueline = d3.line()
             .x(function(d) { return x(d[xField]); })
             .y(function(d) { return y(d[yField]); });
 
@@ -90,5 +90,5 @@ function makeOneLineChart(csvFile, margin, xField, yField, divId, colr) {
     }); // csv close
 }
 
-makeAllLineCharts("../milestone3.csv");
+makeAllLineCharts("milestone3.csv");
 
