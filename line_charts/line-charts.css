@@ -1,0 +1,25 @@
+body {
+    background-color: white;
+}
+
+.axis {
+  font: 12px sans-serif;
+}
+
+path {
+    stroke-width: 2;
+    fill: none;
+}
+
+.axis path, .axis line {
+    fill: none;
+    stroke: grey;
+    stroke-width: 1;
+    shape-rendering: crispEdges;
+}
+
+.title {
+    font: 16px;
+    text-align: center;
+    font-weight: bold;
+}
