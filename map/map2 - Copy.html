@@ -58,89 +58,120 @@
 
 <script>
     
-//the map
+
 var map = L.map("map-canvas",{center:[32.3873506, -117.0765251],zoom:18,maxZoom:25,minZoom:10});
 var Esri_WorldTopoMap = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
 	attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community'
 });
 Esri_WorldTopoMap.addTo(map);
-  
-//some data holders  
 var droneData = [];
-var start = [];
-  
-//callback to render svg on the map  
+  start = [];
 var pathOverlay = L.d3SvgOverlay(function(sel,proj){
+    
+ //var colorScale = d3.scaleSequential(d3.interpolateReds).domain([d3.min(cities,function(d){return d.remaining}),d3.max(cities,function(d){return d.remaining})]);
+
+/*
+    
+  var pathUpd = sel.selectAll('line').data(cities);
+    
+    citiesUpd.enter()
+    .append('line')
+    
+    .attr('stroke',function(d){ return colorScale(d.remaining);})
+    .attr('stroke-width', function(d){ return size})
+    .attr('x1',function(d){return proj.latLngToLayerPoint(d.startlatLng).x;})
+    .attr('y1',function(d){return proj.latLngToLayerPoint(d.startlatLng).y;})
+    .attr('x2',function(d){return proj.latLngToLayerPoint(d.endlatLng).x;})
+    .attr('y2',function(d){return proj.latLngToLayerPoint(d.endlatLng).y;});
+    pathUpd.attr('stroke-width', size);
+    */
   
-  //color scale for battery
-  var colorScale = d3.scaleSequential(d3.interpolateReds).domain([d3.min(droneData,function(d){return d.remaining}),d3.max(droneData,function(d){return d.remaining})]);
-
-  //our line generator
-  var line = d3.line()
-    .x(function(d){ return proj.latLngToLayerPoint(d).x; })
-    .y(function(d){ return proj.latLngToLayerPoint(d).y; })
-  
-  //scale for our svg elements
-  scale = (1 / proj.scale) * 5;
 
   
-
-
+    var line = d3.line()
+    .x(function(d){ return proj.latLngToLayerPoint(d.startlatLng).x; })
+    .y(function(d){ return proj.latLngToLayerPoint(d.startlatLng).y; })
+    .curve(d3.curveCatmullRom.alpha(0));
+  
+  
+  
+      
+  size = 1 / (proj.scale/2);
+  
+    
+ var path = sel.append('path')
+                .attr('stroke','red')
+                .style('stroke-width', size * 5);
+    
+  
+  
   var circle = sel.append("circle")
                           .attr("cx", function(d){return proj.latLngToLayerPoint(droneData[0].startlatLng).x;})
                           .attr("cy", function(d){return proj.latLngToLayerPoint(droneData[0].startlatLng).y;})
                           .attr("r", 5);
 
-
-  function moveLine(elem, size,start){
-
+  prevtotal = 0
+  
+  function moveLine(elem, size,totalLength,start){
+  
     const t = d3.transition().duration(500).ease(d3.easeLinear);
+    //elem.style('stroke-width', size * 5)
+    //    .attr("stroke-dasharray", totalLength + " " + totalLength)
+    //    .attr("stroke-dashoffset", totalLength)
+    //    .transition(t)
+    //    .attr("stroke-dashoffset", 0);
+    
+    //elem.data([start]).attr('d',line)
+     // .attr("stroke-dasharray", totalLength + " " + totalLength)
+      //.attr("stroke-dashoffset", totalLength - prevtotal + 10)
+      //.transition(t)
+    //.attr("stroke-dashoffset", 0);
+        
+     prevtotal = totalLength;
 
-    elem.attr('stroke', function(d){return colorScale(d.remaining)})
-        .style('stroke-width', size * 5)
-        .attr('d', function(d){console.log(d, line(d), proj.latLngToLayerPoint(d.startlatLng).x); return line([d.startlatLng,d.startlatLng])})
-        .transition(t)
-        .attr('d', function(d){console.log(d, line(d), proj.latLngToLayerPoint(d.startlatLng).x); return line([d.startlatLng,d.endlatLng])});
-
+      
   }
-
+  
   function moveCircle(elem, size, start){
     const t = d3.transition().duration(500).ease(d3.easeLinear);
     elem.attr("r", size * 5)
       .transition(t)
-      .attr("cx", function(d){return proj.latLngToLayerPoint(start[start.length - 1].endlatLng).x;})
-      .attr("cy", function(d){return proj.latLngToLayerPoint(start[start.length - 1].endlatLng).y;})
-
+      .attr("cx", function(d){return proj.latLngToLayerPoint(start[start.length - 1].startlatLng).x;})
+      .attr("cy", function(d){return proj.latLngToLayerPoint(start[start.length - 1].startlatLng).y;})
+        
   }
 
-
-
+  
+  
   d3.interval(function(){
-
-
+    
+   
+    
+ // var pathUpd = sel.selectAll('path').data([start]);  
+    
+  // pathUpd.enter()
+  //      .append("path")
+  //      .attr("class","path")
+  //      .attr("d", line)
+        
+  
+  //path.data([start])
+    
   if (droneData.length !=0){
   start.push(droneData.shift());
-
+ 
   }
   size = 1 / proj.scale
-
-
-  var path = sel.selectAll('path')
-    .data(start)
-    .enter().append('path')
-  
-
-
-  sel.selectAll('path').style('stroke-width', size * 5)
-
-  moveLine(path, size, start);
-
+  //pathUpd.transition(t).attr("d", line).attr('stroke','blue').attr('fill', 'none').style('stroke-width', size * 5);
+  moveLine(path, size, path.node().getTotalLength(), start);
   moveCircle(circle, size, start);  
-
-
+  //circle.attr("cx", function(d){return proj.latLngToLayerPoint(start[start.length - 1].startlatLng).x;})
+  //      .attr("cy", function(d){return proj.latLngToLayerPoint(start[start.length - 1].startlatLng).y;})
+  //      .attr("r", size * 5)
+ 
   }, 500);
-
-
+  
+  
 }, options = {zoomDraw:false});
     
 d3.csv("milestone3.csv",function(data){
