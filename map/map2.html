@@ -7,9 +7,10 @@
         html { height: 100% }
         body { height: 100%; margin: 0; padding: 0 }
         #map-canvas { height: 80%; width: 70%; float:left;}
-        #graph_div { width: 30%; float: right; top: 0; right: 0; position: absolute;}
-        #timeline_div {height: 20%; width: 70%;}
-        #line1, #line2 {margin-left: 20px;}
+        #graph_div { width: 30%; top: 0; right: 0; position: absolute;}
+        #timeline_div {height: 20%; width: 70%; bottom: 10px; position: absolute; margin-top: 20px;}
+        #line1_div {width: 30%; top:300px ; right: 0; position: absolute;}
+        #line2_div {width: 30%; top:600px ; right: 0; position: absolute;}
       
       
       .dronePathStyle{
@@ -23,7 +24,7 @@
     	rel='stylesheet' type='text/css'/>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge">
     <link rel="stylesheet" type="text/css" href="timeline.css">
-    <link rel="stylesheet" type="text/css" href="line-charts.css">
+    <!-- <link rel="stylesheet" type="text/css" href="line-charts.css"> -->
 
 </head>
 <body>
@@ -41,17 +42,22 @@
     <svg width="1360" height="150" id='timeline'></svg>
   </div>
   <div id='graph_div'>
-    <svg width="570" height="250" id='graph'></svg>
-
+    <svg width="570" height="300" id='line0'></svg>
+  </div>
+  <br>
+  <div id="line1_div">
+     <svg width="570" height="300" id='line1'></svg>
+</div>
+<br>
+<div id="line2_div">
+   <svg width="570" height="300" id='line2'></svg>
+</div>
 
   <script src="timeline.js"></script>
   <script src="https://d3js.org/d3-scale-chromatic.v0.3.min.js"></script>
     <script src="https://d3js.org/d3-path.v1.min.js"></script>
-  <br>
-  <div id="line1"></div>
-    <br>
-  <div id="line2"></div>
-  <script src="line-charts.js"></script>
+
+  <!-- <script src="line-charts.js"></script> -->
 
 <!-- </div> -->
 
@@ -98,9 +104,9 @@ var pathOverlay = L.d3SvgOverlay(function(sel,proj){
 
     elem.attr('stroke', function(d){return colorScale(d.remaining)})
         .style('stroke-width', size * 5)
-        .attr('d', function(d){console.log(d, line(d), proj.latLngToLayerPoint(d.startlatLng).x); return line([d.startlatLng,d.startlatLng])})
+        // .attr('d', function(d){console.log(d, line(d), proj.latLngToLayerPoint(d.startlatLng).x); return line([d.startlatLng,d.startlatLng])})
         .transition(t)
-        .attr('d', function(d){console.log(d, line(d), proj.latLngToLayerPoint(d.startlatLng).x); return line([d.startlatLng,d.endlatLng])});
+        // .attr('d', function(d){console.log(d, line(d), proj.latLngToLayerPoint(d.startlatLng).x); return line([d.startlatLng,d.endlatLng])});
 
   }
 
@@ -161,7 +167,7 @@ d3.csv("milestone3.csv",function(data){
 });
 
 window.addEventListener('timeline_update', function (e) {
-        console.log('Timeline range changed to:', e.detail);
+        // console.log('Timeline range changed to:', e.detail);
     });
 </script>
     
