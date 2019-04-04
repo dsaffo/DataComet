@@ -65,9 +65,10 @@
 <script>
     
 //the map
-var map = L.map("map-canvas",{center:[32.3873506, -117.0765251],zoom:18,maxZoom:25,minZoom:10});
+var map = L.map("map-canvas",{center:[32.3873506, -117.0765251],zoom:19,maxZoom:25,minZoom:10});
 var Esri_WorldTopoMap = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-	attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community'
+    maxZoom: 20,
+    maxNativeZoom: 18
 });
 Esri_WorldTopoMap.addTo(map);
   
@@ -82,7 +83,7 @@ window.addEventListener('timeline_update', function (e) {
     d3.selectAll('circle').remove();
     selectedData = [];
     //color scale for battery
-    var colorScale = d3.scaleSequential(d3.interpolateReds).domain([d3.min(droneData,function(d){return d.remaining}),d3.max(droneData,function(d){return d.remaining})]);
+    var colorScale = d3.scaleSequential(d3.interpolateReds).domain([d3.min(droneData,function(d){return d.jamming_indicator}),d3.max(droneData,function(d){return d.jamming_indicator})]);
 
     //our line generator
     var line = d3.line()
@@ -90,7 +91,7 @@ window.addEventListener('timeline_update', function (e) {
       .y(function(d){ return proj.latLngToLayerPoint(d).y; })
     
     //scale for our svg elements
-    scale = (1 / proj.scale) * 5;
+    scale = (1 / proj.scale) * 8;
     
     timeWindow = e.detail;
     console.log(timeWindow)
@@ -104,9 +105,10 @@ window.addEventListener('timeline_update', function (e) {
     var path = sel.selectAll('path')
       .data(selectedData)
       .enter().append('path')
-      .attr('stroke', 'red')
+      .attr('stroke', function(d) { return colorScale(d.jamming_indicator) })
       .attr('id', 'drone')
-      .attr('d', function(d){ return line([d.startlatLng,d.endlatLng])});
+      .attr('d', function(d){ return line([d.startlatLng,d.endlatLng])})
+      .style('stroke-width', 8);
 
     
     var circle = sel.append("circle")
@@ -114,9 +116,9 @@ window.addEventListener('timeline_update', function (e) {
                     .attr("cy", function(d){return proj.latLngToLayerPoint(selectedData[selectedData.length - 1].endlatLng).y;})
                     .attr("r", scale);
     
-    sel.selectAll('drone').style('stroke-width', scale);
+    //sel.selectAll('drone').style('stroke-width', scale);
     
-    sel.selectAll('circle').attr('r', scale);
+    sel.selectAll('circle').attr('r', scale).attr('fill',function(d){return colorScale(selectedData[selectedData.length - 1].jamming_indicator)});
 
 
     function moveLine(elem, size,start){
