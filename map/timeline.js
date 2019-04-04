@@ -356,7 +356,7 @@ xAxis_array.push(arr[1]);
 x_array.push(arr[2]);
 
 
-create_timeline("milestone3.csv","time","noise",line_array, xAxis_array, x_array);
+create_timeline("milestone3.csv","time","alt",line_array, xAxis_array, x_array);
 
 
 // create_timeline("milestone3.csv","time","noise");

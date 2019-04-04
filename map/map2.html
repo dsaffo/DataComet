@@ -76,123 +76,120 @@ var droneData = [];
 var start = [];
   
 window.addEventListener('timeline_update', function (e) {
-//callback to render svg on the map  
-});
-var pathOverlay = L.d3SvgOverlay(function(sel,proj){
-  d3.selectAll('#drone').remove();
-  d3.selectAll('circle').remove();
-  selectedData = [];
-  //color scale for battery
-  var colorScale = d3.scaleSequential(d3.interpolateReds).domain([d3.min(droneData,function(d){return d.remaining}),d3.max(droneData,function(d){return d.remaining})]);
+  //callback to render svg on the map  
+  var pathOverlay = L.d3SvgOverlay(function(sel,proj){
+    d3.selectAll('#drone').remove();
+    d3.selectAll('circle').remove();
+    selectedData = [];
+    //color scale for battery
+    var colorScale = d3.scaleSequential(d3.interpolateReds).domain([d3.min(droneData,function(d){return d.remaining}),d3.max(droneData,function(d){return d.remaining})]);
 
-  //our line generator
-  var line = d3.line()
-    .x(function(d){ return proj.latLngToLayerPoint(d).x; })
-    .y(function(d){ return proj.latLngToLayerPoint(d).y; })
-  
-  //scale for our svg elements
-  scale = (1 / proj.scale) * 5;
-  
-  timeWindow = e.detail;
-  console.log(timeWindow)
-  
-  for(i = timeWindow[0]; i < timeWindow[1]; i++){
-    selectedData.push(droneData[i])
-  }
-  console.log(selectedData);
-  
-  
-   var path = sel.selectAll('path')
-    .data(selectedData)
-    .enter().append('path')
-    .attr('stroke', 'red')
-    .attr('id', 'drone')
-    .attr('d', function(d){ return line([d.startlatLng,d.endlatLng])});
+    //our line generator
+    var line = d3.line()
+      .x(function(d){ return proj.latLngToLayerPoint(d).x; })
+      .y(function(d){ return proj.latLngToLayerPoint(d).y; })
+    
+    //scale for our svg elements
+    scale = (1 / proj.scale) * 5;
+    
+    timeWindow = e.detail;
+    console.log(timeWindow)
+    
+    for(i = timeWindow[0]; i < timeWindow[1]; i++){
+      selectedData.push(droneData[i])
+    }
+    console.log(selectedData);
+    
+    
+    var path = sel.selectAll('path')
+      .data(selectedData)
+      .enter().append('path')
+      .attr('stroke', 'red')
+      .attr('id', 'drone')
+      .attr('d', function(d){ return line([d.startlatLng,d.endlatLng])});
 
-  
-  var circle = sel.append("circle")
-                  .attr("cx", function(d){return proj.latLngToLayerPoint(selectedData[selectedData.length - 1].endlatLng).x;})
-                  .attr("cy", function(d){return proj.latLngToLayerPoint(selectedData[selectedData.length - 1].endlatLng).y;})
-                  .attr("r", scale);
-  
-  sel.selectAll('drone').style('stroke-width', scale);
-  
-  sel.selectAll('circle').attr('r', scale);
+    
+    var circle = sel.append("circle")
+                    .attr("cx", function(d){return proj.latLngToLayerPoint(selectedData[selectedData.length - 1].endlatLng).x;})
+                    .attr("cy", function(d){return proj.latLngToLayerPoint(selectedData[selectedData.length - 1].endlatLng).y;})
+                    .attr("r", scale);
+    
+    sel.selectAll('drone').style('stroke-width', scale);
+    
+    sel.selectAll('circle').attr('r', scale);
 
 
-  function moveLine(elem, size,start){
+    function moveLine(elem, size,start){
 
-    const t = d3.transition().duration(500).ease(d3.easeLinear);
+      const t = d3.transition().duration(500).ease(d3.easeLinear);
 
-    elem.attr('stroke', function(d){return colorScale(d.remaining)})
-        .style('stroke-width', size * 5)
-        .attr('d', function(d){return line([d.startlatLng,d.startlatLng])})
+      elem.attr('stroke', function(d){return colorScale(d.remaining)})
+          .style('stroke-width', size * 5)
+          .attr('d', function(d){return line([d.startlatLng,d.startlatLng])})
+          .transition(t)
+          .attr('d', function(d){return line([d.startlatLng,d.endlatLng])});
+    }
+
+    function moveCircle(elem, size, start){
+      const t = d3.transition().duration(500).ease(d3.easeLinear);
+      elem.attr("r", size * 5)
         .transition(t)
-        .attr('d', function(d){return line([d.startlatLng,d.endlatLng])});
-  }
+        .attr("cx", function(d){return proj.latLngToLayerPoint(start[start.length - 1].endlatLng).x;})
+        .attr("cy", function(d){return proj.latLngToLayerPoint(start[start.length - 1].endlatLng).y;})
 
-  function moveCircle(elem, size, start){
-    const t = d3.transition().duration(500).ease(d3.easeLinear);
-    elem.attr("r", size * 5)
-      .transition(t)
-      .attr("cx", function(d){return proj.latLngToLayerPoint(start[start.length - 1].endlatLng).x;})
-      .attr("cy", function(d){return proj.latLngToLayerPoint(start[start.length - 1].endlatLng).y;})
+    }
 
-  }
-
-    
-
-    //
-
-
-   /* d3.interval(function(){
-
-
- if (droneData.length !=0){
-  start.push(droneData.shift());
-
-  }
-  size = 1 / proj.scale
-
-
-  var path = sel.selectAll('path')
-    .data(start)
-    .enter().append('path')
-  
-
-
-  sel.selectAll('path').style('stroke-width', size * 5)
-
-  moveLine(path, size, start);
-
-  moveCircle(circle, size, start);  
-
-
-  }, 500);
-*/
       
-}, options = {zoomDraw:false});
+
+      //
+
+
+    /* d3.interval(function(){
+
+
+  if (droneData.length !=0){
+    start.push(droneData.shift());
+
+    }
+    size = 1 / proj.scale
+
+
+    var path = sel.selectAll('path')
+      .data(start)
+      .enter().append('path')
     
-d3.csv("milestone3.csv",function(data){
-    startlat = 323873506 / 10000000
-    startlon = -1170765251 / 10000000
-    droneData = data.map(function(d){
-    endlat = d.lat/10000000  
-    endlon =  d.lon/10000000 
-    d.startlatLng = [+startlat,+startlon];    
-    d.endlatLng = [+endlat,+endlon];
-    // console.log("start",startlat,startlon)
-    // console.log("end",endlat,endlon)
-    startlat = endlat
-    startlon = endlon
-    return d;
+
+
+    sel.selectAll('path').style('stroke-width', size * 5)
+
+    moveLine(path, size, start);
+
+    moveCircle(circle, size, start);  
+
+
+    }, 500);
+  */
+        
+  }, options = {zoomDraw:false});
+      
+  d3.csv("milestone3.csv",function(data){
+      startlat = 323873506 / 10000000
+      startlon = -1170765251 / 10000000
+      droneData = data.map(function(d){
+      endlat = d.lat/10000000  
+      endlon =  d.lon/10000000 
+      d.startlatLng = [+startlat,+startlon];    
+      d.endlatLng = [+endlat,+endlon];
+      // console.log("start",startlat,startlon)
+      // console.log("end",endlat,endlon)
+      startlat = endlat
+      startlon = endlon
+      return d;
+    });
+  pathOverlay.addTo(map);
   });
- pathOverlay.addTo(map);
 });
 
-window.addEventListener('timeline_update', function (e) {
-        // console.log('Timeline range changed to:', e.detail);
-});
 </script>
     
     
