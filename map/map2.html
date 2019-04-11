@@ -7,10 +7,14 @@
         html { height: 100% }
         body { height: 100%; margin: 0; padding: 0 }
         #map-canvas { height: 90%; width: 70%; float:left;}
-        #graph_div { width: 30%; top: 0; right: 0; position: absolute;}
         #timeline_div {height: 10%; width: 70%; bottom: 10px; position: absolute; margin-top: 20px;}
+        #graphs_div {height: 90%; width: 30%; float:right;}
+        #line1_div {width: 90%; height:33.3%; top: 0; right: 0; float: left}
+        #line2_div {width: 90%; height:33.3%; top:30% ; right: 0; float:left}
+        #line3_div {width: 90%; height:33.3%; top:60% ; right: 0; float:left;}
+        /* #graph_div {width: 30%; top: 0; right: 0; position: absolute;}
         #line1_div {width: 30%; top:300px ; right: 0; position: absolute;}
-        #line2_div {width: 30%; top:600px ; right: 0; position: absolute;}
+        #line2_div {width: 30%; top:600px ; right: 0; position: absolute;} */
       
       
       .dronePathStyle{
@@ -43,17 +47,18 @@
   <div id='timeline_div'>
     <svg width="1360" height="150" id='timeline'></svg>
   </div>
-  <div id='graph_div'>
-    <svg width="570" height="300" id='line0'></svg>
+  <div id="graphs_div">
+    <div id='line1_div'>
+      <svg width="570" height="300" id='line0'></svg>
+    </div>
+    <div id="line2_div">
+      <svg width="570" height="300" id='line1'></svg>
+    </div>
+    <div id="line3_div">
+      <svg width="570" height="300" id='line2'></svg>
+    </div>
   </div>
-  <br>
-  <div id="line1_div">
-     <svg width="570" height="300" id='line1'></svg>
-</div>
-<br>
-<div id="line2_div">
-   <svg width="570" height="300" id='line2'></svg>
-</div>
+  
 
   <script src="timeline.js"></script>
   <script src="https://d3js.org/d3-scale-chromatic.v0.3.min.js"></script>
