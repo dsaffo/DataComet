@@ -151,108 +151,136 @@
 // }
 
 
-
 function create_timeline(filename, x_attr, y_attr, line_charts_arr, line_chart_axes_arr, line_charts_arr_x) {
-    var svg = d3.select("#timeline"),
-    margin = {top: 20, right: 20, bottom: 20, left: 10},
-    width = +svg.attr("width") - margin.left - margin.right,
-    height = +svg.attr("height") - margin.top - margin.bottom;
-
-    var x = d3.scaleLinear().range([0, width]),
-    y = d3.scaleLinear().range([height, 0]);
-
-    var xAxis = d3.axisBottom(x),
-        yAxis = d3.axisLeft(y);
-
-    let focusses = d3.selectAll(".focus");
-
-    var brush = d3.brushX()
-        .extent([[0, 0], [width, height]])
-        .on("brush end", brushed);
-
-    var zoom = d3.zoom()
-        .scaleExtent([1, Infinity])
-        .translateExtent([[0, 0], [510, 210]])
-        .extent([[0, 0], [width, height]])
-        .on("zoom", zoomed);
-
-    var line = d3.line()
-        .x(function (d) { return x(d[x_attr]); })
-        .y(function (d) { return y(d[y_attr]); });
-
-    var context = svg.append("g")
-        .attr("class", "context")
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
+    var window_dimensions = [0, 0]
+    // Read once to identify window bounds
     d3.csv(filename, type, function (error, data) {
         if (error) throw error;
-      
-        x.domain(d3.extent(data, function(d) { return d[x_attr]; }));
-        y.domain([0, d3.max(data, function (d) { return d[y_attr]; })]);
-    
-        context.append("path")
-            .datum(data)
-            .attr("class", "line")
-            .attr("d", line);
-    
-        context.append("g")
-            .attr("class", "axis axis--x")
-            .attr("transform", "translate(0," + height + ")")
-            .call(xAxis);
-      
-        context.append("g")
-            .attr("class", "brush")
-            .call(brush)
-            .call(brush.move, x.range());
+        window_dimensions[0] = data[0][x_attr];
+        window_dimensions[1] = data[data.length-1][x_attr]
+        // console.log(data[0][x_attr]);
+        // console.log(data[data.length-1][x_attr]);
     });
-
-
-    function brushed() {
-        if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return; // ignore brush-by-zoom
-        var s = d3.event.selection || x.range();
-        // console.log(s.map(x2.invert, x2));
-        // x.domain(s.map(x2.invert, x2));
-        for (var i=0; i<line_charts_arr.length ; i++) {
-            line_charts_arr_x[i].domain(s.map(x.invert, x));
-            focusses.select("#line" +i+ " .line").attr("d", line_charts_arr[i]);
-            focusses.select(".axis--x").call(line_chart_axes_arr[i]);
-        }
-        svg.selectAll(".zoom").call(zoom.transform, d3.zoomIdentity
-            .scale(width / (s[1] - s[0]))
-            .translate(-s[0], 0));
-
-        // Create an event that states the updated selected timeline range 
-        var evt = new CustomEvent('timeline_update', { detail: [Math.floor(s.map(x.invert, x)[0]), Math.floor(s.map(x.invert, x)[1])] });
-        window.dispatchEvent(evt);
-    }
     
-    function zoomed() {
-        if (d3.event.sourceEvent && d3.event.sourceEvent.type === "brush") return; // ignore zoom-by-brush
-        var t = d3.event.transform;
-        // x.domain(t.rescaleX(x2).domain());
-        for (var i=0; i<line_charts_arr.length; i++) {
-            line_charts_arr_x[i].domain(t.rescaleX(x).domain());
-            focusses.select(".line").attr("d", line_charts_arr[i]);
-            focusses.select(".axis--x").call(line_chart_axes_arr[i]);
-            context.select(".brush").call(brush.move, line_charts_arr_x[i].range().map(t.invertX, t));
+    var window_dimensions = [0, ]
+    
+    function redraw() {
+        timeline_div = document.getElementById("timeline_div");    
+        document.getElementById('timeline').setAttribute("width", ''+timeline_div.clientWidth);
+        document.getElementById('timeline').setAttribute("height", ''+timeline_div.clientHeight);   
+        
+        var svg = d3.select("#timeline"),
+        margin = {top: 20, right: 20, bottom: 20, left: 10},
+        width = +svg.attr("width") - margin.left - margin.right,
+        height = +svg.attr("height") - margin.top - margin.bottom;
+
+        // Clears the SVG graph to allow redrawing
+        $("#timeline").empty();
+    
+        var x = d3.scaleLinear().range([0, width]),
+        y = d3.scaleLinear().range([height, 0]);
+    
+        var xAxis = d3.axisBottom(x),
+            yAxis = d3.axisLeft(y);
+    
+        let focusses = d3.selectAll(".focus");
+    
+        var brush = d3.brushX()
+            .extent([[0, 0], [width, height]])
+            .on("brush end", brushed)
+    
+        var zoom = d3.zoom()
+            .scaleExtent([1, Infinity])
+            .translateExtent([[0, 0], [510, 210]])
+            .extent([[0, 0], [width, height]])
+            .on("zoom", zoomed);
+    
+        var line = d3.line()
+            .x(function (d) { return x(d[x_attr]); })
+            .y(function (d) { return y(d[y_attr]); });
+    
+        var context = svg.append("g")
+            .attr("class", "context")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    
+        d3.csv(filename, type, function (error, data) {
+            if (error) throw error;
+          
+            x.domain(d3.extent(data, function(d) { return d[x_attr]; }));
+            y.domain([0, d3.max(data, function (d) { return d[y_attr]; })]);
+        
+            context.append("path")
+                .datum(data)
+                .attr("class", "line")
+                .attr("d", line);
+        
+            context.append("g")
+                .attr("class", "axis axis--x")
+                .attr("transform", "translate(0," + height + ")")
+                .call(xAxis);
+          
+            context.append("g")
+                .attr("class", "brush")
+                .call(brush)
+                .call(brush.move, [window_dimensions[0], window_dimensions[1]].map(x));
+                // .call(brush.move, x.range());
+        });
+
+
+        function brushed() {
+            if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return; // ignore brush-by-zoom
+            var s = d3.event.selection || x.range();
+            // console.log(s.map(x2.invert, x2));
+            // x.domain(s.map(x2.invert, x2));
+            for (var i=0; i<line_charts_arr.length ; i++) {
+                line_charts_arr_x[i].domain(s.map(x.invert, x));
+                focusses.select("#line" +i+ " .line").attr("d", line_charts_arr[i]);
+                focusses.select(".axis--x").call(line_chart_axes_arr[i]);
+            }
+            svg.selectAll(".zoom").call(zoom.transform, d3.zoomIdentity
+                .scale(width / (s[1] - s[0]))
+                .translate(-s[0], 0));
+    
+            // Create an event that states the updated selected timeline range 
+            var evt = new CustomEvent('timeline_update', { detail: [Math.floor(s.map(x.invert, x)[0]), Math.floor(s.map(x.invert, x)[1])] });
+            window.dispatchEvent(evt);
         }
-        // context.select(".brush").call(brush.move, x.range().map(t.invertX, t));
-
-        // Create an event that states the updated selected timeline range 
-        var evt = new CustomEvent('timeline_update', { detail: [Math.floor(t.rescaleX(x).domain()[0]), Math.floor(t.rescaleX(x).domain()[1])] });
-        window.dispatchEvent(evt);
+        
+        function zoomed() {
+            if (d3.event.sourceEvent && d3.event.sourceEvent.type === "brush") return; // ignore zoom-by-brush
+            var t = d3.event.transform;
+            // x.domain(t.rescaleX(x2).domain());
+            for (var i=0; i<line_charts_arr.length; i++) {
+                line_charts_arr_x[i].domain(t.rescaleX(x).domain());
+                focusses.select(".line").attr("d", line_charts_arr[i]);
+                focusses.select(".axis--x").call(line_chart_axes_arr[i]);
+                context.select(".brush").call(brush.move, line_charts_arr_x[i].range().map(t.invertX, t));
+            }
+            // context.select(".brush").call(brush.move, x.range().map(t.invertX, t));
+    
+            // Create an event that states the updated selected timeline range 
+            var evt = new CustomEvent('timeline_update', { detail: [Math.floor(t.rescaleX(x).domain()[0]), Math.floor(t.rescaleX(x).domain()[1])] });
+            window.dispatchEvent(evt);
+        }
+    
+        // Event listener
+        window.addEventListener('timeline_update', function (e) {
+            // Update the brush window dimensions in case of resizing
+            window_dimensions = e.detail;
+        });
     }
-
-    // Event listener
-    window.addEventListener('timeline_update', function (e) {
-        // console.log('Timeline range changed to:', e.detail);
-    });
 
     function type(d) {
         d[x_attr] = +d[x_attr];
         d[y_attr] = +d[y_attr];
         return d;
     }
+
+    // Draw for the first time to initialize.
+    redraw();
+
+    // Redraw based on the new size whenever the browser window is resized.
+    window.addEventListener("resize", redraw);
 }
 
 // Returns x, xAxis and line
@@ -336,9 +364,8 @@ function create_line_chart(divId, filename, x_attr, y_attr) {
 }
 
 
-// // Create a timeline visualization
+// Create a timeline visualization
 // create_timeline_legacy("milestone3.csv","time","noise");
-// console.log("timeline ran");
 var line_array = [],
 xAxis_array = [],
 x_array = [],arr;
@@ -358,5 +385,7 @@ x_array.push(arr[2]);
 
 create_timeline("milestone3.csv","time","alt",line_array, xAxis_array, x_array);
 
-
-// create_timeline("milestone3.csv","time","noise");
+// var timeline_div = document.getElementById("timeline_div");
+// var width = timeline_div.clientWidth;
+// var height = timeline_div.clientHeight;
+// console.log(width, height);
