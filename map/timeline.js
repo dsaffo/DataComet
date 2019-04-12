@@ -265,8 +265,10 @@ function create_timeline(filename, x_attr, y_attr, line_charts_arr, line_chart_a
     
         // Event listener
         window.addEventListener('timeline_update', function (e) {
-            // Update the brush window dimensions in case of resizing
-            window_dimensions = e.detail;
+            // Update the brush window dimensions in case of resizing (also make sure the window isn't of zero length)
+            if (e.detail[0] != e.detail[1]) {
+                window_dimensions = e.detail;
+            }
         });
     }
 
@@ -382,8 +384,32 @@ function create_line_chart(divId, filename, x_attr, y_attr) {
     // Draw for the first time to initialize.
     var output = redraw();
 
+
     // Redraw based on the new size whenever the browser window is resized.
-    window.addEventListener("resize", redraw);
+    // window.addEventListener("resize", redraw);
+
+    // Using different method because event listener may updated to many times and lead
+    // to artifacts in the resulting line graphs
+    var rtime;
+    var timeout = false;
+    var delta = 200;
+    $(window).resize(function() {
+        rtime = new Date();
+        if (timeout === false) {
+            timeout = true;
+            setTimeout(resizeend, delta);
+        }
+    });
+    
+    function resizeend() {
+        if (new Date() - rtime < delta) {
+            setTimeout(resizeend, delta);
+        } else {
+            timeout = false;
+            redraw();
+        }               
+    }
+
     return output;
 }
 
@@ -393,31 +419,41 @@ function set_line_graph_globals(arr, idx) {
     x_array[idx] = arr[2];
 }
 
-// Create a timeline visualization
-// create_timeline_legacy("milestone3.csv","time","noise");
+function clear_all_svg() {
+    console.log("All SVGs cleared");
+    $('#line0').empty();
+    $('#line1').empty();
+    $('#line2').empty();
+    $('#timeline').empty();
+}
+
+function tab_clicked(id) {
+    clear_all_svg();
+    if (id == 'tab1') {
+        create_graphs("milestone3.csv", "time", "noise", "jamming_indicator", "rssi");
+    }
+    else if (id == 'tab2') {
+        create_graphs("milestone3.csv", "time", "alt", "vel_m_s", "satellites_used");    
+    }
+    else if (id == 'tab3') {
+        create_graphs("milestone3.csv", "time", "load", "ram_usage", "voltage_filtered_v");
+    }
+    else if (id == 'tab4') {
+        create_graphs("milestone3.csv", "time", "baro_temp_celcius", "baro_pressure_pa", "remaining");
+    }
+}
+
+// Creates the timeline as well as 3 line graphs which are all brush-zoom linked
+function create_graphs(filename, x_attr, y_attr1, y_attr2, y_attr3) {
+    create_line_chart("#line0",filename, x_attr, y_attr1);
+    create_line_chart("#line1",filename, x_attr, y_attr2);
+    create_line_chart("#line2",filename, x_attr, y_attr3);
+    create_timeline(filename, x_attr, y_attr1, line_array, xAxis_array, x_array);
+}
+
+// Global variables that hold the line, xAxis and x-arrays of the line graphs 
 var line_array = [0,0,0];
 var xAxis_array = [0,0,0];
 var x_array = [0,0,0];
-arr = create_line_chart("#line0","milestone3.csv","time","noise");
-// set_line_graph_globals(arr, 0);
-// line_array.push(arr[0]);
-// xAxis_array.push(arr[1]);
-// x_array.push(arr[2]);
-arr = create_line_chart("#line1","milestone3.csv","time","jamming_indicator");
-// set_line_graph_globals(arr, 1);
-// line_array.push(arr[0]);
-// xAxis_array.push(arr[1]);
-// x_array.push(arr[2]);
-arr = create_line_chart("#line2","milestone3.csv","time","remaining");
-// set_line_graph_globals(arr, 2);
-// line_array.push(arr[0]);
-// xAxis_array.push(arr[1]);
-// x_array.push(arr[2]);
 
-// console.log(line_array, xAxis_array, x_array);
-create_timeline("milestone3.csv","time","alt",line_array, xAxis_array, x_array);
-
-// var timeline_div = document.getElementById("timeline_div");
-// var width = timeline_div.clientWidth;
-// var height = timeline_div.clientHeight;
-// console.log(width, height);
+create_graphs("milestone3.csv", "time", "noise", "jamming_indicator", "rssi");
