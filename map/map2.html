@@ -176,12 +176,14 @@ var colorSwitch = false;
 
     
       
-      timeWindow = window;
+      //timeWindow = window;
       window2 = window; 
 
-      for(i = timeWindow[0]; i < timeWindow[1]; i++){
-        selectedData.push(droneData[i])
-      }
+      //for(i = timeWindow[0]; i < timeWindow[1]; i++){
+      //  selectedData.push(droneData[i])
+      //}
+      
+      selectedData = droneData.slice(window[0],window[1] + 1);
       
       if (colorSwitch == true){
         colorScale = selectColorScale(selectedData,'jamming_indicator','Reds')
@@ -191,13 +193,26 @@ var colorSwitch = false;
         colorScale = selectColorScale(droneData,'jamming_indicator','Reds')
       }
      
-           var path = sel.selectAll('path')
+      var path = sel.selectAll('path')
         .data(selectedData)
         .enter().append('path')
         .attr('stroke', function(d) { return colorScale(parseInt(d.jamming_indicator)) })
         .attr('id', 'drone')
         .attr('d', function(d){ return line([d.startlatLng,d.endlatLng])})
-        .style('stroke-width', map.getZoom());
+        .style('stroke-width', map.getZoom())
+        .on('mouseover', function(d){
+            d3.select(this).style("cursor", "pointer"); 
+            d3.select(this).style('stroke-width', d3.select(this).style('stroke-width') * 2);
+        })
+        .on('mouseout', function(d){
+          if (widthSwitch == true){
+            
+            d3.select(this).style('stroke-width', function(d){ return d.jamming_indicator});
+          }
+          else{
+            d3.select(this).style('stroke-width', map.getZoom());
+          }
+        })
 
       if (widthSwitch == true){
         path.style('stroke-width', function(d){ return d.jamming_indicator;});
@@ -249,10 +264,10 @@ map.on('zoomend', function() {
 });
   
 window.addEventListener('timeline_update', function (e) {
-  if(colorSwitch == true){
-    colorSwitch = false;
-    document.getElementById("colorSwitch").checked = false;
-  }
+  //if(colorSwitch == true){
+  //  colorSwitch = false;
+  //  document.getElementById("colorSwitch").checked = false;
+  //}
   drawMap(e.detail,widthSwitch,colorSwitch);
 });
 
