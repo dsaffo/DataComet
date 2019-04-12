@@ -303,7 +303,7 @@ $(document).ready(function(){
 
 $(".tab").click(function() {
   id = this.id
-  
+
   $("#radio1_input").prop("checked", true);
 
   if (id == 'tab1') {
@@ -324,10 +324,12 @@ $(".tab").click(function() {
   }
 })
 
+// Need to listeners for radio change (one when user clicks and one when the tab is changed)!!
 $("input[name='group1']").change(function(){
   var tab = $(".active").parent().attr('id');
-  var new_attr = timeline_get_attribute(tab, $(this).val());
-  console.log(new_attr);
+  var radio_value = $(this).val();
+  var new_attr = timeline_get_attribute(tab, radio_value);
+  console.log(new_attr, radio_value);
 });
 
 </script>
