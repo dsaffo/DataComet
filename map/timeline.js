@@ -207,7 +207,7 @@ function create_timeline(filename, x_attr, y_attr, line_charts_arr, line_chart_a
             if (error) throw error;
           
             x.domain(d3.extent(data, function(d) { return d[x_attr]; }));
-            y.domain([0, d3.max(data, function (d) { return d[y_attr]; })]);
+            y.domain([d3.min(data, function (d) { return d[y_attr]; }), d3.max(data, function (d) { return d[y_attr]; })]);
         
             context.append("path")
                 .datum(data)
@@ -451,9 +451,44 @@ function create_graphs(filename, x_attr, y_attr1, y_attr2, y_attr3) {
     create_timeline(filename, x_attr, y_attr1, line_array, xAxis_array, x_array);
 }
 
-// Global variables that hold the line, xAxis and x-arrays of the line graphs 
+// Removes timeline SVG and redraws timeline using a new y-attr
+function update_timeline(y_attr) {
+    $('#timeline').empty();
+    create_timeline(filename, "time", y_attr, line_array, xAxis_array, x_array);
+}
+
+// Return attribute name, update timeline to match selected radio button
+function timeline_get_attribute(tab, value) {
+    console.log(tab);
+    console.log(value);
+    var attr = "";
+    var security_attrs = ["noise", "jamming_indicator", "rssi"];
+    var physical_attrs = ["alt", "vel_m_s", "satellites_used"];
+    var system_attrs = ["load", "ram_usage", "voltage_filtered_v"];
+    var env_attrs = ["baro_temp_celcius", "baro_pressure_pa", "remaining"];
+    if (tab == "tab1") {
+        attr = security_attrs[value-1];
+    }
+    else if (tab == "tab2") {
+        attr = physical_attrs[value-1];
+
+    }
+    else if (tab == "tab3") {
+        attr = system_attrs[value-1];
+    }
+    else if (tab == "tab4") {
+        attr = env_attrs[value-1];
+    }
+
+    update_timeline(attr);
+
+    return attr;
+}
+
+// Global variables that hold the line, xAxis and x-arrays of the line graphs
+filename = "milestone3.csv";
 var line_array = [0,0,0];
 var xAxis_array = [0,0,0];
 var x_array = [0,0,0];
 
-create_graphs("milestone3.csv", "time", "noise", "jamming_indicator", "rssi");
+create_graphs(filename, "time", "noise", "jamming_indicator", "rssi");
