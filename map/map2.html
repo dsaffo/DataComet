@@ -164,14 +164,19 @@ var start = [];
 var window2 = [];
 var widthSwitch = false;
 var colorSwitch = false;
+// tabs and radio
+var radioValue = 1;
+var yAttr = 'noise';
 
 
 
   function selectColorScale(data, value, cmap){
     
-    max = d3.max(data, function(d){ return parseInt(d[value]); });
+    max = d3.max(data, function(d){ return parseFloat(d[value]); });
+    min = d3.min(data, function(d){ return parseFloat(d[value]); });
+    console.log(min,max)
     var colorScale = d3.scaleSequential(d3["interpolate" + cmap])
-        .domain([0, max]);
+        .domain([min, max]);
     
     return colorScale;
   }
@@ -186,8 +191,8 @@ var colorSwitch = false;
       selectedData = [];
       
       //color scale for battery
-      var max = d3.max(droneData,function(d){return parseInt(d['jamming_indicator'])});
-      var median = d3.median(droneData,function(d){return d.jamming_indicator});
+      //var max = d3.max(droneData,function(d){return parseInt(d['jamming_indicator'])});
+      //var median = d3.median(droneData,function(d){return d.jamming_indicator});
       //console.log('max',max);
       //var colorScale = d3.scaleSequential(d3.interpolateReds).domain([0, max]);
      
@@ -208,17 +213,17 @@ var colorSwitch = false;
       selectedData = droneData.slice(window[0],window[1] + 1);
       
       if (colorSwitch == true){
-        colorScale = selectColorScale(selectedData,'jamming_indicator','Reds')
+        colorScale = selectColorScale(selectedData,yAttr,'Reds')
       }
       
       else{ 
-        colorScale = selectColorScale(droneData,'jamming_indicator','Reds')
+        colorScale = selectColorScale(droneData,yAttr,'Reds')
       }
      
       var path = sel.selectAll('path')
         .data(selectedData)
         .enter().append('path')
-        .attr('stroke', function(d) { return colorScale(parseInt(d.jamming_indicator)) })
+        .attr('stroke', function(d) { return colorScale(parseFloat(d[yAttr])) })
         .attr('id', 'drone')
         .attr('d', function(d){ return line([d.startlatLng,d.endlatLng])})
         .style('stroke-width', map.getZoom())
@@ -229,7 +234,7 @@ var colorSwitch = false;
         .on('mouseout', function(d){
           if (widthSwitch == true){
             
-            d3.select(this).style('stroke-width', function(d){ return d.jamming_indicator});
+            d3.select(this).style('stroke-width', function(d){ return d[yAttr]});
           }
           else{
             d3.select(this).style('stroke-width', map.getZoom());
@@ -237,7 +242,7 @@ var colorSwitch = false;
         })
 
       if (widthSwitch == true){
-        path.style('stroke-width', function(d){ return d.jamming_indicator;});
+        path.style('stroke-width', function(d){ return d[yAttr];});
       }
         
       
@@ -245,8 +250,8 @@ var colorSwitch = false;
       var circle = sel.append("circle")
                       .attr("cx", function(d){return proj.latLngToLayerPoint(selectedData[selectedData.length - 1].endlatLng).x;})
                       .attr("cy", function(d){return proj.latLngToLayerPoint(selectedData[selectedData.length - 1].endlatLng).y;})
-                      .attr("r", map.getZoom())
-                      .attr('fill',function(d){return colorScale(selectedData[selectedData.length - 1].jamming_indicator)});
+                      .attr("r", map.getZoom()/1.5)
+                      .attr('fill',function(d){return colorScale(selectedData[selectedData.length - 1][yAttr])});
 
 
   
@@ -320,7 +325,8 @@ $(".tab").click(function() {
   id = this.id
 
   $("#radio1_input").prop("checked", true);
-
+  radioValue = 1;
+  yAttr = timeline_get_attribute(id, radioValue);
   if (id == 'tab1') {
     console.log("Clicked", id);
     tab_clicked(id);
@@ -337,14 +343,16 @@ $(".tab").click(function() {
     console.log("Clicked", id);
     tab_clicked(id);
   }
+  drawMap(window2, widthSwitch,colorSwitch);
 })
 
 // Need to listeners for radio change (one when user clicks and one when the tab is changed)!!
 $("input[name='group1']").change(function(){
   var tab = $(".active").parent().attr('id');
-  var radio_value = $(this).val();
-  var new_attr = timeline_get_attribute(tab, radio_value);
-  console.log(new_attr, radio_value);
+  radioValue = $(this).val();
+  yAttr = timeline_get_attribute(tab, radioValue);
+  //console.log(new_attr, radio_value);
+  drawMap(window2, widthSwitch,colorSwitch);
 });
 
 </script>
