@@ -28,8 +28,31 @@
 
 </head>
 <body>
-  <div id="map-canvas"></div>
     
+  <div id="map-canvas" style="position: relative; z-index: 1">
+    <div class="row">
+    <div class="switch" style="position: relative; z-index: 2; float: right; margin-top: 10px; margin-right: 26px">
+      <label style="color: white; font-size: 15px">
+        Width: Off
+      <input id='widthSwitch' type="checkbox">
+      <span class="lever"></span>
+        On
+      </label>
+    </div>
+    </div>
+     <div class="row">
+    <div class="switch" style="position: relative; z-index: 2; float: right; margin-right: 10px">
+      <label style="color: white; font-size: 15px">
+        Scale: Global
+      <input id='colorSwitch' type="checkbox">
+      <span class="lever"></span>
+        Local
+      </label>
+    </div>
+    </div>
+  </div>
+ 
+  
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js"></script>
       
   <script src="https://d3js.org/d3.v4.min.js"></script>
@@ -56,6 +79,14 @@
   <script src="timeline.js"></script>
   <script src="https://d3js.org/d3-scale-chromatic.v0.3.min.js"></script>
     <script src="https://d3js.org/d3-path.v1.min.js"></script>
+  <script src="https://d3js.org/d3-color.v1.min.js"></script>
+<script src="https://d3js.org/d3-interpolate.v1.min.js"></script>
+<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+            
 
   <!-- <script src="line-charts.js"></script> -->
 
@@ -65,131 +96,152 @@
 <script>
     
 //the map
-var map = L.map("map-canvas",{center:[32.3873506, -117.0765251],zoom:19,maxZoom:25,minZoom:10});
+var map = L.map("map-canvas",{center:[32.3873506, -117.0765251],zoom:19,maxZoom:25,minZoom:16});
 var Esri_WorldTopoMap = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
     maxZoom: 20,
     maxNativeZoom: 18
 });
 Esri_WorldTopoMap.addTo(map);
+
   
 //some data holders  
 var droneData = [];
 var start = [];
+var window2 = [];
+var widthSwitch = false;
+var colorSwitch = false;
+
+  //callback to render svg on the map  
+  
+
+  function selectColorScale(data, value, cmap){
+    
+    max = d3.max(data, function(d){ return parseInt(d[value]); });
+    var colorScale = d3.scaleSequential(d3["interpolate" + cmap])
+        .domain([0, max]);
+    
+    return colorScale;
+  }
+  
+  function drawMap(window, widthSwitch, colorSwitch){
+   
+    var pathOverlay = L.d3SvgOverlay(function(sel,proj){
+     
+      d3.selectAll('#drone').remove();
+      d3.selectAll('circle').remove();
+      
+      selectedData = [];
+      
+      //color scale for battery
+      var max = d3.max(droneData,function(d){return parseInt(d['jamming_indicator'])});
+      var median = d3.median(droneData,function(d){return d.jamming_indicator});
+      //console.log('max',max);
+      //var colorScale = d3.scaleSequential(d3.interpolateReds).domain([0, max]);
+     
+      //our line generator
+      var line = d3.line()
+        .x(function(d){ return proj.latLngToLayerPoint(d).x; })
+        .y(function(d){ return proj.latLngToLayerPoint(d).y; })
+
+    
+      
+      timeWindow = window;
+      window2 = window; 
+
+      for(i = timeWindow[0]; i < timeWindow[1]; i++){
+        selectedData.push(droneData[i])
+      }
+      
+      if (colorSwitch == true){
+        colorScale = selectColorScale(selectedData,'jamming_indicator','Reds')
+      }
+      
+      else{ 
+        colorScale = selectColorScale(droneData,'jamming_indicator','Reds')
+      }
+     
+           var path = sel.selectAll('path')
+        .data(selectedData)
+        .enter().append('path')
+        .attr('stroke', function(d) { return colorScale(parseInt(d.jamming_indicator)) })
+        .attr('id', 'drone')
+        .attr('d', function(d){ return line([d.startlatLng,d.endlatLng])})
+        .style('stroke-width', map.getZoom());
+
+      if (widthSwitch == true){
+        path.style('stroke-width', function(d){ return d.jamming_indicator;});
+      }
+        
+      
+
+      var circle = sel.append("circle")
+                      .attr("cx", function(d){return proj.latLngToLayerPoint(selectedData[selectedData.length - 1].endlatLng).x;})
+                      .attr("cy", function(d){return proj.latLngToLayerPoint(selectedData[selectedData.length - 1].endlatLng).y;})
+                      .attr("r", map.getZoom())
+                      .attr('fill',function(d){return colorScale(selectedData[selectedData.length - 1].jamming_indicator)});
+
+
+  
+
+
+      console.log('zoom', map.getZoom());
+      console.log('scale', proj.scale);
+
+  
+
+    }, options = {zoomDraw:false});
+
+    d3.csv("milestone3.csv",function(data){
+        startlat = 323873506 / 10000000
+        startlon = -1170765251 / 10000000
+        droneData = data.map(function(d){
+        endlat = d.lat/10000000  
+        endlon =  d.lon/10000000 
+        d.startlatLng = [+startlat,+startlon];    
+        d.endlatLng = [+endlat,+endlon];
+        // console.log("start",startlat,startlon)
+        // console.log("end",endlat,endlon)
+        startlat = endlat
+        startlon = endlon
+        //var max = d3.max(data,function(d){console.log('jam',typeof d['jamming_indicator']); return d['jamming_indicator']});
+        
+        //console.log('max',max);
+        return d;
+      });
+    pathOverlay.addTo(map);
+    });
+  }
+
+  
+map.on('zoomend', function() {
+  drawMap(window2,widthSwitch,colorSwitch);
+});
   
 window.addEventListener('timeline_update', function (e) {
-  //callback to render svg on the map  
-  var pathOverlay = L.d3SvgOverlay(function(sel,proj){
-    d3.selectAll('#drone').remove();
-    d3.selectAll('circle').remove();
-    selectedData = [];
-    //color scale for battery
-    var colorScale = d3.scaleSequential(d3.interpolateReds).domain([d3.min(droneData,function(d){return d.jamming_indicator}),d3.max(droneData,function(d){return d.jamming_indicator})]);
+  if(colorSwitch == true){
+    colorSwitch = false;
+    document.getElementById("colorSwitch").checked = false;
+  }
+  drawMap(e.detail,widthSwitch,colorSwitch);
+});
 
-    //our line generator
-    var line = d3.line()
-      .x(function(d){ return proj.latLngToLayerPoint(d).x; })
-      .y(function(d){ return proj.latLngToLayerPoint(d).y; })
-    
-    //scale for our svg elements
-    scale = (1 / proj.scale) * 8;
-    
-    timeWindow = e.detail;
-    console.log(timeWindow)
-    
-    for(i = timeWindow[0]; i < timeWindow[1]; i++){
-      selectedData.push(droneData[i])
-    }
-    console.log(selectedData);
-    
-    
-    var path = sel.selectAll('path')
-      .data(selectedData)
-      .enter().append('path')
-      .attr('stroke', function(d) { return colorScale(d.jamming_indicator) })
-      .attr('id', 'drone')
-      .attr('d', function(d){ return line([d.startlatLng,d.endlatLng])})
-      .style('stroke-width', 8);
-
-    
-    var circle = sel.append("circle")
-                    .attr("cx", function(d){return proj.latLngToLayerPoint(selectedData[selectedData.length - 1].endlatLng).x;})
-                    .attr("cy", function(d){return proj.latLngToLayerPoint(selectedData[selectedData.length - 1].endlatLng).y;})
-                    .attr("r", scale);
-    
-    //sel.selectAll('drone').style('stroke-width', scale);
-    
-    sel.selectAll('circle').attr('r', scale).attr('fill',function(d){return colorScale(selectedData[selectedData.length - 1].jamming_indicator)});
-
-
-    function moveLine(elem, size,start){
-
-      const t = d3.transition().duration(500).ease(d3.easeLinear);
-
-      elem.attr('stroke', function(d){return colorScale(d.remaining)})
-          .style('stroke-width', size * 5)
-          .attr('d', function(d){return line([d.startlatLng,d.startlatLng])})
-          .transition(t)
-          .attr('d', function(d){return line([d.startlatLng,d.endlatLng])});
-    }
-
-    function moveCircle(elem, size, start){
-      const t = d3.transition().duration(500).ease(d3.easeLinear);
-      elem.attr("r", size * 5)
-        .transition(t)
-        .attr("cx", function(d){return proj.latLngToLayerPoint(start[start.length - 1].endlatLng).x;})
-        .attr("cy", function(d){return proj.latLngToLayerPoint(start[start.length - 1].endlatLng).y;})
-
-    }
-
-      
-
-      //
-
-
-    /* d3.interval(function(){
-
-
-  if (droneData.length !=0){
-    start.push(droneData.shift());
-
-    }
-    size = 1 / proj.scale
-
-
-    var path = sel.selectAll('path')
-      .data(start)
-      .enter().append('path')
-    
-
-
-    sel.selectAll('path').style('stroke-width', size * 5)
-
-    moveLine(path, size, start);
-
-    moveCircle(circle, size, start);  
-
-
-    }, 500);
-  */
-        
-  }, options = {zoomDraw:false});
-      
-  d3.csv("milestone3.csv",function(data){
-      startlat = 323873506 / 10000000
-      startlon = -1170765251 / 10000000
-      droneData = data.map(function(d){
-      endlat = d.lat/10000000  
-      endlon =  d.lon/10000000 
-      d.startlatLng = [+startlat,+startlon];    
-      d.endlatLng = [+endlat,+endlon];
-      // console.log("start",startlat,startlon)
-      // console.log("end",endlat,endlon)
-      startlat = endlat
-      startlon = endlon
-      return d;
-    });
-  pathOverlay.addTo(map);
-  });
+document.getElementById("widthSwitch").addEventListener("change", function(){
+  if (widthSwitch == false){
+    widthSwitch = true;
+  }
+  else{
+    widthSwitch = false;
+  }
+  drawMap(window2,widthSwitch);
+});
+document.getElementById("colorSwitch").addEventListener("change", function(){
+  if (colorSwitch == false){
+    colorSwitch = true;
+  }
+  else{
+    colorSwitch = false;
+  }
+  drawMap(window2,widthSwitch,colorSwitch);
 });
 
 </script>
