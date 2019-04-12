@@ -22,12 +22,14 @@
     #map-canvas { height: 90%; width: 70%; float:left;}
     #timeline_div {height: 10%; width: 70%; bottom: 10px; position: absolute; margin-top: 20px;}
     #graphs_div {height: 90%; width: 30%; float:right;}
-    #line1_div {width: 90%; height:33.3%; top: 0; right: 0; float: left}
-    #line2_div {width: 90%; height:33.3%; top:30% ; right: 0; float:left}
-    #line3_div {width: 90%; height:33.3%; top:60% ; right: 0; float:left;}
-    #tabs_div {height: 3%; width: 30%; top:90%; float:right;}
-   
-  
+    #line1_div {width: 95%; height:33.3%; top: 0; right: 0; float: right}
+    #line2_div {width: 95%; height:33.3%; top:30% ; right: 0; float:right}
+    #line3_div {width: 95%; height:33.3%; top:60% ; right: 0; float:right;}
+    #radio_div {width: 5%; height:100%; float:left}
+    #radio1 {height:33.3%; bottom:0%}
+    #radio2 {height:33.3%; bottom:0%}
+    #radio3 {height:33.3%; bottom:0%}
+    #tabs_div {height: 3%; width: 30%; float:right; margin-bottom: 0px;}
   
   .dronePathStyle{
     fill: none;
@@ -42,9 +44,6 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 
-  
-
-    
   <div id="map-canvas" style="position: relative; z-index: 1">
     <div class="row">
     <div class="switch" style="position: relative; z-index: 2; float: right; margin-top: 10px; margin-right: 26px">
@@ -75,13 +74,34 @@
   <script src="L.D3SvgOverlay.js"></script>
       
   <script src="https://d3js.org/d3-selection-multi.v0.4.min.js"></script>
-  <script src="line-charts.js"></script>
 
   <!-- Create Timeline and Line Graphs -->
   <div id='timeline_div'>
     <svg width="1360" height="150" id='timeline'></svg>
   </div>
   <div id="graphs_div">
+    <div id="radio_div">
+        <form action="#" style="height: 100%;">
+          <p id='radio1'>
+            <label>
+              <input name="group1" type="radio" value="1" id="radio1_input" checked />
+              <span style="top: 40%; left: 20%"></span>
+            </label>
+          </p>
+          <p id='radio2'>
+            <label>
+              <input name="group1" type="radio" value="2" id="radio2_input"/>
+              <span style="top: 40%; left: 20%"></span>
+            </label>
+          </p>
+          <p id='radio3'>
+            <label>
+              <input name="group1" type="radio" value="3" id="radio3_input"/>
+              <span style="top: 40%; left: 20%"></span>
+            </label>
+          </p>
+        </form>
+      </div>
     <div id='line1_div'>
       <svg width="570" height="300" id='line0'></svg>
     </div>
@@ -97,19 +117,21 @@
   <div class="row" id="tabs_div">
     <div class="col s12">
       <ul class="tabs">
-        <li class="tab col s3" id='tab1'><a class="active" href="#1" style="font-size: 20px">Security</a></li>
-        <li class="tab col s3" id='tab2'><a href="#2" style="font-size: 20px">Physical</a></li>
-        <li class="tab col s3" id='tab3'><a href="#3" style="font-size: 20px">System</a></li>
-        <li class="tab col s3" id='tab4'><a href="#4" style="font-size: 20px">Environmental</a></li>
+        <li class="tab col s3" id='tab1'><a class="active" href="#1" style="font-size: 16px">Security</a></li>
+        <li class="tab col s3" id='tab2'><a href="#2" style="font-size: 16px">Physical</a></li>
+        <li class="tab col s3" id='tab3'><a href="#3" style="font-size: 16px">System</a></li>
+        <li class="tab col s3" id='tab4'><a href="#4" style="font-size: 16px">Env.</a></li>
       </ul>
     </div>
   </div>
 
-  <script src="timeline.js"></script>
-  <script src="https://d3js.org/d3-scale-chromatic.v0.3.min.js"></script>
+  
 
-    <script src="https://d3js.org/d3-path.v1.min.js"></script>
-  <script src="https://d3js.org/d3-color.v1.min.js"></script>
+<script src="timeline.js"></script>
+<script src="https://d3js.org/d3-scale-chromatic.v0.3.min.js"></script>
+
+<script src="https://d3js.org/d3-path.v1.min.js"></script>
+<script src="https://d3js.org/d3-color.v1.min.js"></script>
 <script src="https://d3js.org/d3-interpolate.v1.min.js"></script>
 <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
 
@@ -281,6 +303,8 @@ $(document).ready(function(){
 
 $(".tab").click(function() {
   id = this.id
+  
+  $("#radio1_input").prop("checked", true);
 
   if (id == 'tab1') {
     console.log("Clicked", id);
@@ -300,6 +324,11 @@ $(".tab").click(function() {
   }
 })
 
+$("input[name='group1']").change(function(){
+  var tab = $(".active").parent().attr('id');
+  var new_attr = timeline_get_attribute(tab, $(this).val());
+  console.log(new_attr);
+});
 
 </script>
     
