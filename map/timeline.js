@@ -359,6 +359,48 @@ function create_line_chart(divId, filename, x_attr, y_attr) {
                 .style("text-anchor", "middle")
                 .style("font-size", "12px")
                 .text(y_attr);
+
+
+            var mouseG = focus.append("g")
+                .attr("class", "mouse-over-effects");
+
+            // Create vertical line for hover
+            mouseG.append("path") // this is the black vertical line to follow mouse
+                .attr("class", "mouse-line")
+                .style("stroke", "black")
+                .style("stroke-width", "1px")
+                .style("opacity", "0");
+
+            var mousePerLine = mouseG.selectAll('.mouse-per-line')
+                .data(data)
+                .enter()
+                .append("g")
+                .attr("class", "mouse-per-line");
+
+            mouseG.append('svg:rect') // append a rect to catch mouse movements on canvas
+                .attr('width', width) // can't catch mouse events on a g element
+                .attr('height', height)
+                // .attr("transform", "translate(0," + height + ")")
+                .attr('fill', 'none')
+                .attr('pointer-events', 'all')
+                .on('mouseout', function() { // on mouse out hide line, circles and text
+                d3.select(".mouse-line")
+                    .style("opacity", "1");
+                })
+                .on('mouseover', function() { // on mouse in show line, circles and text
+                  d3.select(".mouse-line")
+                    .style("opacity", "1");
+                })
+                .on('mousemove', function() { // mouse moving over canvas
+                  var mouse = d3.mouse(this);
+                  d3.select(".mouse-line")
+                    .attr("d", function() {
+                      var d = "M" + mouse[0] + "," + (height*3);
+                      d += " " + mouse[0] + "," + (0);
+                      console.log(d);
+                      return d;
+                });
+            });
         });
 
         arr = [line, xAxis, x];
