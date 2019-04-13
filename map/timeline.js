@@ -160,6 +160,9 @@ function create_timeline(filename, x_attr, y_attr, line_charts_arr, line_chart_a
             window_dimensions[1] = data[data.length-1][x_attr]
         });
     }
+
+    // handle variable for the timeline
+    var handle;
         
     function redraw() {
         timeline_div = document.getElementById("timeline_div");    
@@ -167,7 +170,7 @@ function create_timeline(filename, x_attr, y_attr, line_charts_arr, line_chart_a
         document.getElementById('timeline').setAttribute("height", ''+timeline_div.clientHeight);   
         
         var svg = d3.select("#timeline"),
-        margin = {top: 20, right: 20, bottom: 20, left: 10},
+        margin = {top: 20, right: 65, bottom: 50, left: 65},
         width = +svg.attr("width") - margin.left - margin.right,
         height = +svg.attr("height") - margin.top - margin.bottom;
 
@@ -184,7 +187,7 @@ function create_timeline(filename, x_attr, y_attr, line_charts_arr, line_chart_a
     
         var brush = d3.brushX()
             .extent([[0, 0], [width, height]])
-            .on("brush end", brushed)
+            .on("start brush end", brushed)
     
         var zoom = d3.zoom()
             .scaleExtent([1, Infinity])
@@ -209,26 +212,64 @@ function create_timeline(filename, x_attr, y_attr, line_charts_arr, line_chart_a
             context.append("path")
                 .datum(data)
                 .attr("class", "line")
-                .attr("d", line);
+                .attr("d", line)
+                .style("stroke", timeline_color);
         
             context.append("g")
                 .attr("class", "axis axis--x")
                 .attr("transform", "translate(0," + height + ")")
                 .call(xAxis);
           
-            context.append("g")
+            var gBrush = context.append("g")
                 .attr("class", "brush")
                 .call(brush)
-                .call(brush.move, [window_dimensions[0], window_dimensions[1]].map(x));
+                // .call(brush.move, [window_dimensions[0], window_dimensions[1]].map(x));
                 // .call(brush.move, x.range());
+
+            // X - axis label for timeline
+            svg.append("text")
+                .attr("class", "x label")
+                .attr("text-anchor", "end")
+                .attr("transform",
+                    "translate(" + (width) + " ," + 
+                    (height + margin.top + 0.5*margin.bottom) + ")")
+                .style("font-size", "20px")
+                .text("Time (s)");
+
+            handle = gBrush.selectAll(".handle--custom")
+                .data([{type: "w"}, {type: "e"}])
+                .enter().append("path")
+                    .attr("class", "handle--custom")
+                    .attr("fill", "#666")
+                    .attr("fill-opacity", 0.9)
+                    .attr("stroke", "#000")
+                    .attr("stroke-width", 1)
+                    .attr("cursor", "ew-resize")
+                    .attr("d", d3.arc()
+                        .innerRadius(0)
+                        .outerRadius(height / 2)
+                        .startAngle(0)
+                        .endAngle(function(d, i) { return i ? Math.PI : -Math.PI; }));
+
+            gBrush.call(brush.move, [window_dimensions[0], window_dimensions[1]].map(x));
+
         });
 
 
         function brushed() {
             if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return; // ignore brush-by-zoom
+            
+            // Updated the handle appropriately as we brush
+            var s_handle = d3.event.selection;
+            if (s_handle == null) {
+                handle.attr("display", "none");
+            }
+            else {
+                handle.attr("display", null).attr("transform", function(d, i) { return "translate(" + s_handle[i] + "," + height / 2 + ")"; });
+            }
+            
             var s = d3.event.selection || x.range();
-            // console.log(s.map(x2.invert, x2));
-            // x.domain(s.map(x2.invert, x2));
+
             for (var i=0; i<line_charts_arr.length ; i++) {
                 line_charts_arr_x[i].domain(s.map(x.invert, x));
                 focusses.select("#line" +i+ " .line").attr("d", line_charts_arr[i]);
@@ -345,20 +386,22 @@ function create_line_chart(divId, filename, x_attr, y_attr, line_color) {
                 .style("stroke", line_color)
                 .style("stroke-width", "3px");
 
-            svg.append("text")
-                .attr("x", width - 25)
-                .attr("y", height + margin.bottom + 10)
-                .style("font-size", "12px")
-                .text(x_attr);
+            // X-axis label is commented out
+            // svg.append("text")
+            //     .attr("x", width - 25)
+            //     .attr("y", height + margin.bottom + 10)
+            //     .style("font-size", "12px")
+            //     .text(x_attr);
 
+            // text label for the y axis
             svg.append("text")
                 .attr("transform", "rotate(-90)")
-                .attr("y", margin.left/3)
-                .attr("dx", -2*margin.left)
+                .attr("y", 0)
+                .attr("x",0 - (height / 2))
+                .attr("dy", "1em")
                 .style("text-anchor", "middle")
-                .style("font-size", "12px")
-                .text(y_attr);
-
+                .style("font-size", "16px")
+                .text(y_attr); 
 
             var mouseG = focus.append("g")
                 .attr("class", "mouse-over-effects");
@@ -470,6 +513,7 @@ function clear_all_svg() {
 
 function tab_clicked(id) {
     clear_all_svg();
+    timeline_color = 'red';
     if (id == 'tab1') {
         create_graphs("milestone3.csv", "time", "noise", "jamming_indicator", "rssi");
     }
@@ -492,9 +536,11 @@ function create_graphs(filename, x_attr, y_attr1, y_attr2, y_attr3) {
     create_timeline(filename, x_attr, y_attr1, line_array, xAxis_array, x_array);
 }
 
-// Removes timeline SVG and redraws timeline using a new y-attr
-function update_timeline(y_attr) {
+// Removes timeline SVG and redraws timeline using a new y-attr and appropriate color
+function update_timeline(y_attr, value) {
     $('#timeline').empty();
+    colors = ['red', 'blue', 'green'];
+    timeline_color = colors[value-1];
     create_timeline(filename, "time", y_attr, line_array, xAxis_array, x_array);
 }
 
@@ -512,7 +558,6 @@ function timeline_get_attribute(tab, value) {
     }
     else if (tab == "tab2") {
         attr = physical_attrs[value-1];
-
     }
     else if (tab == "tab3") {
         attr = system_attrs[value-1];
@@ -521,7 +566,7 @@ function timeline_get_attribute(tab, value) {
         attr = env_attrs[value-1];
     }
 
-    update_timeline(attr);
+    update_timeline(attr, value);
 
     return attr;
 }
@@ -534,5 +579,8 @@ var x_array = [0,0,0];
 
 // Global variable that remembers the window_dimensions of the brush
 var window_dimensions = [0, 0];
+
+// Global color of the timeline (initially red but changes depending on radio value)
+var timeline_color = 'red'
 
 create_graphs(filename, "time", "noise", "jamming_indicator", "rssi");
