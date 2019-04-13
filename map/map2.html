@@ -21,7 +21,7 @@
     body { height: 100%; margin: 0; padding: 0 }
     #map-canvas { height: 90%; width: 70%; float:left;}
     #timeline_div {height: 10%; width: 70%; bottom: 10px; position: absolute; margin-top: 20px;}
-    #graphs_div {height: 90%; width: 30%; float:right;}
+    #graphs_div {height: 80%; width: 30%; float:right;}
     #line1_div {width: 95%; height:33.3%; top: 0; right: 0; float: right}
     #line2_div {width: 95%; height:33.3%; top:30% ; right: 0; float:right}
     #line3_div {width: 95%; height:33.3%; top:60% ; right: 0; float:right;}
@@ -30,6 +30,7 @@
     #radio2 {height:33.3%; bottom:0%}
     #radio3 {height:33.3%; bottom:0%}
     #tabs_div {height: 3%; width: 30%; float:right; margin-bottom: 0px;}
+    #select_div {height: 3%; width: 30%; float:right; margin-top: 30px;}
   
   .dronePathStyle{
     fill: none;
@@ -124,7 +125,17 @@
       </ul>
     </div>
   </div>
-
+  <div class="row" id = "select_div">
+    <div class="input-field col s12">
+    <select>
+      <option value="" disabled selected>Choose your option</option>
+      <option value="1">Option 1</option>
+      <option value="2">Option 2</option>
+      <option value="3">Option 3</option>
+    </select>
+    <label>Materialize Select</label>
+  </div>
+</div>
   
 
 <script src="timeline.js"></script>
@@ -164,19 +175,36 @@ var start = [];
 var window2 = [];
 var widthSwitch = false;
 var colorSwitch = false;
+// tabs and radio
+var radioValue = 1;
+var yAttr = 'noise';
 
 
 
   function selectColorScale(data, value, cmap){
     
-    max = d3.max(data, function(d){ return parseInt(d[value]); });
+    max = d3.max(data, function(d){ return parseFloat(d[value]); });
+    min = d3.min(data, function(d){ return parseFloat(d[value]); });
+    //console.log(min,max)
     var colorScale = d3.scaleSequential(d3["interpolate" + cmap])
-        .domain([0, max]);
+        .domain([min, max]);
     
     return colorScale;
   }
   
-  function drawMap(window, widthSwitch, colorSwitch){
+  function drawMap(window){
+    
+    var cmap = 'Reds'
+    
+    if (radioValue == 1){
+      cmap = 'Reds'
+    }
+    else if (radioValue == 2){
+      cmap = 'Blues'
+    }
+    else{
+      cmap = 'Greens'
+    }
    
     var pathOverlay = L.d3SvgOverlay(function(sel,proj){
      
@@ -186,8 +214,8 @@ var colorSwitch = false;
       selectedData = [];
       
       //color scale for battery
-      var max = d3.max(droneData,function(d){return parseInt(d['jamming_indicator'])});
-      var median = d3.median(droneData,function(d){return d.jamming_indicator});
+      //var max = d3.max(droneData,function(d){return parseInt(d['jamming_indicator'])});
+      //var median = d3.median(droneData,function(d){return d.jamming_indicator});
       //console.log('max',max);
       //var colorScale = d3.scaleSequential(d3.interpolateReds).domain([0, max]);
      
@@ -208,17 +236,17 @@ var colorSwitch = false;
       selectedData = droneData.slice(window[0],window[1] + 1);
       
       if (colorSwitch == true){
-        colorScale = selectColorScale(selectedData,'jamming_indicator','Reds')
+        colorScale = selectColorScale(selectedData,yAttr,cmap)
       }
       
       else{ 
-        colorScale = selectColorScale(droneData,'jamming_indicator','Reds')
+        colorScale = selectColorScale(droneData,yAttr,cmap)
       }
      
       var path = sel.selectAll('path')
         .data(selectedData)
         .enter().append('path')
-        .attr('stroke', function(d) { return colorScale(parseInt(d.jamming_indicator)) })
+        .attr('stroke', function(d) { return colorScale(parseFloat(d[yAttr])) })
         .attr('id', 'drone')
         .attr('d', function(d){ return line([d.startlatLng,d.endlatLng])})
         .style('stroke-width', map.getZoom())
@@ -229,7 +257,7 @@ var colorSwitch = false;
         .on('mouseout', function(d){
           if (widthSwitch == true){
             
-            d3.select(this).style('stroke-width', function(d){ return d.jamming_indicator});
+            d3.select(this).style('stroke-width', function(d){ return d[yAttr]});
           }
           else{
             d3.select(this).style('stroke-width', map.getZoom());
@@ -237,7 +265,7 @@ var colorSwitch = false;
         })
 
       if (widthSwitch == true){
-        path.style('stroke-width', function(d){ return d.jamming_indicator;});
+        path.style('stroke-width', function(d){ return d[yAttr];});
       }
         
       
@@ -245,15 +273,15 @@ var colorSwitch = false;
       var circle = sel.append("circle")
                       .attr("cx", function(d){return proj.latLngToLayerPoint(selectedData[selectedData.length - 1].endlatLng).x;})
                       .attr("cy", function(d){return proj.latLngToLayerPoint(selectedData[selectedData.length - 1].endlatLng).y;})
-                      .attr("r", map.getZoom())
-                      .attr('fill',function(d){return colorScale(selectedData[selectedData.length - 1].jamming_indicator)});
+                      .attr("r", map.getZoom()/1.5)
+                      .attr('fill',function(d){return colorScale(selectedData[selectedData.length - 1][yAttr])});
 
 
   
 
 
-      console.log('zoom', map.getZoom());
-      console.log('scale', proj.scale);
+      //console.log('zoom', map.getZoom());
+      //console.log('scale', proj.scale);
 
   
 
@@ -290,7 +318,7 @@ window.addEventListener('timeline_update', function (e) {
   //  colorSwitch = false;
   //  document.getElementById("colorSwitch").checked = false;
   //}
-  drawMap(e.detail,widthSwitch,colorSwitch);
+  drawMap(e.detail);
 });
 
 document.getElementById("widthSwitch").addEventListener("change", function(){
@@ -309,42 +337,48 @@ document.getElementById("colorSwitch").addEventListener("change", function(){
   else{
     colorSwitch = false;
   }
-  drawMap(window2,widthSwitch,colorSwitch);
+  drawMap(window2);
 });
 
 $(document).ready(function(){
     $('.tabs').tabs();
 });
+ $(document).ready(function(){
+    $('select').formSelect();
+  });
 
 $(".tab").click(function() {
   id = this.id
 
   $("#radio1_input").prop("checked", true);
-
+  radioValue = 1;
+  yAttr = timeline_get_attribute(id, radioValue);
   if (id == 'tab1') {
-    console.log("Clicked", id);
+    //console.log("Clicked", id);
     tab_clicked(id);
   }
   else if (id == 'tab2') {
-    console.log("Clicked", id);
+    //console.log("Clicked", id);
     tab_clicked(id);
   }
   else if (id == 'tab3') {
-    console.log("Clicked", id);
+    //console.log("Clicked", id);
     tab_clicked(id);
   }
   else if (id == 'tab4') {
-    console.log("Clicked", id);
+    //console.log("Clicked", id);
     tab_clicked(id);
   }
+  drawMap(window2);
 })
 
 // Need to listeners for radio change (one when user clicks and one when the tab is changed)!!
 $("input[name='group1']").change(function(){
   var tab = $(".active").parent().attr('id');
-  var radio_value = $(this).val();
-  var new_attr = timeline_get_attribute(tab, radio_value);
-  console.log(new_attr, radio_value);
+  radioValue = $(this).val();
+  yAttr = timeline_get_attribute(tab, radioValue);
+  //console.log(new_attr, radio_value);
+  drawMap(window2);
 });
 
 </script>
