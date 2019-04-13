@@ -152,18 +152,15 @@
 
 
 function create_timeline(filename, x_attr, y_attr, line_charts_arr, line_chart_axes_arr, line_charts_arr_x) {
-    var window_dimensions = [0, 0]
-    // Read once to identify window bounds
-    d3.csv(filename, type, function (error, data) {
-        if (error) throw error;
-        window_dimensions[0] = data[0][x_attr];
-        window_dimensions[1] = data[data.length-1][x_attr]
-        // console.log(data[0][x_attr]);
-        // console.log(data[data.length-1][x_attr]);
-    });
-    
-    var window_dimensions = [0, ]
-    
+    // If window_dimensions haven't been initialized, initialize them now
+    if (window_dimensions[0] == 0 && window_dimensions[1] == 0) {
+        d3.csv(filename, type, function (error, data) {
+            if (error) throw error;
+            window_dimensions[0] = data[0][x_attr];
+            window_dimensions[1] = data[data.length-1][x_attr]
+        });
+    }
+        
     function redraw() {
         timeline_div = document.getElementById("timeline_div");    
         document.getElementById('timeline').setAttribute("width", ''+timeline_div.clientWidth);
@@ -286,7 +283,7 @@ function create_timeline(filename, x_attr, y_attr, line_charts_arr, line_chart_a
 }
 
 // Returns x, xAxis and line
-function create_line_chart(divId, filename, x_attr, y_attr) {
+function create_line_chart(divId, filename, x_attr, y_attr, line_color) {
 
     function redraw() {
         line_div = $(divId).parent()[0];
@@ -344,7 +341,9 @@ function create_line_chart(divId, filename, x_attr, y_attr) {
             Line_chart.append("path")
                 .datum(data)
                 .attr("class", "line")
-                .attr("d", line);
+                .attr("d", line)
+                .style("stroke", line_color)
+                .style("stroke-width", "3px");
 
             svg.append("text")
                 .attr("x", width - 25)
@@ -397,7 +396,7 @@ function create_line_chart(divId, filename, x_attr, y_attr) {
                     .attr("d", function() {
                       var d = "M" + mouse[0] + "," + (height*3);
                       d += " " + mouse[0] + "," + (0);
-                      console.log(d);
+                      // console.log(d);
                       return d;
                 });
             });
@@ -487,9 +486,9 @@ function tab_clicked(id) {
 
 // Creates the timeline as well as 3 line graphs which are all brush-zoom linked
 function create_graphs(filename, x_attr, y_attr1, y_attr2, y_attr3) {
-    create_line_chart("#line0",filename, x_attr, y_attr1);
-    create_line_chart("#line1",filename, x_attr, y_attr2);
-    create_line_chart("#line2",filename, x_attr, y_attr3);
+    create_line_chart("#line0",filename, x_attr, y_attr1, "red");
+    create_line_chart("#line1",filename, x_attr, y_attr2, "blue");
+    create_line_chart("#line2",filename, x_attr, y_attr3, "green");
     create_timeline(filename, x_attr, y_attr1, line_array, xAxis_array, x_array);
 }
 
@@ -532,5 +531,8 @@ filename = "milestone3.csv";
 var line_array = [0,0,0];
 var xAxis_array = [0,0,0];
 var x_array = [0,0,0];
+
+// Global variable that remembers the window_dimensions of the brush
+var window_dimensions = [0, 0];
 
 create_graphs(filename, "time", "noise", "jamming_indicator", "rssi");
