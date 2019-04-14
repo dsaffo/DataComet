@@ -150,6 +150,9 @@
 //     }
 // }
 
+// global data
+var xAxisLine;
+var lineChartsHeight;
 
 function create_timeline(filename, x_attr, y_attr, line_charts_arr, line_chart_axes_arr, line_charts_arr_x) {
     // If window_dimensions haven't been initialized, initialize them now
@@ -334,7 +337,7 @@ function create_line_chart(divId, filename, x_attr, y_attr, line_color) {
         margin = {top: 20, right: 20, bottom: 40, left: 60},
         width = +svg.attr("width") - margin.left - margin.right,
         height = +svg.attr("height") - margin.top - margin.bottom;
-
+        lineChartsHeight = height;
         $(divId).empty();
 
         var x = d3.scaleLinear().range([0, width]),
@@ -369,7 +372,7 @@ function create_line_chart(divId, filename, x_attr, y_attr, line_color) {
         
             x.domain(d3.extent(data, function(d) { return d[x_attr]; }));
             y.domain([d3.min(data, function (d) { return d[y_attr]; }), d3.max(data, function (d) { return d[y_attr]; })]);
-        
+            xAxisLine = x;
             focus.append("g")
                 .attr("class", "axis axis--x")
                 .attr("transform", "translate(0," + height + ")")
@@ -426,23 +429,28 @@ function create_line_chart(divId, filename, x_attr, y_attr, line_color) {
                 .attr('fill', 'none')
                 .attr('pointer-events', 'all')
                 .on('mouseout', function() { // on mouse out hide line, circles and text
-                d3.select(".mouse-line")
+                  for (var i = 0; i < 3; i++) {
+                    d3.select("#line"+i+" .mouse-line")
                     .style("opacity", "1");
+                  }
                 })
                 .on('mouseover', function() { // on mouse in show line, circles and text
-                  d3.select(".mouse-line")
+                  for (var i = 0; i < 3; i++) {
+                    d3.select("#line"+i+" .mouse-line")
                     .style("opacity", "1");
+                  }
                 })
                 .on('mousemove', function() { // mouse moving over canvas
                   var mouse = d3.mouse(this);
-                  d3.select(".mouse-line")
-                    .attr("d", function() {
-                      var d = "M" + mouse[0] + "," + (height*3);
-                      d += " " + mouse[0] + "," + (0);
-                      // console.log(d);
-                      return d;
+                  for (var i = 0; i < 3; i++) {
+                    d3.select("#line"+i+" .mouse-line")
+                      .attr("d", function() {
+                        var d = "M" + mouse[0] + "," + (height);
+                        d += " " + mouse[0] + "," + (0);
+                        return d;
+                      });
+                  }
                 });
-            });
         });
 
         arr = [line, xAxis, x];
@@ -511,6 +519,19 @@ function clear_all_svg() {
     $('#timeline').empty();
 }
 
+// function to set the vertical-line on line charts upon hover on map
+function set_hover_line(x_time) {
+  for (var i = 0; i < 3; i++) {
+    d3.select("#line"+i+" .mouse-line")
+      .attr("d", function() {
+        var d = "M" + xAxisLine(x_time) + "," + (lineChartsHeight);
+        d += " " + xAxisLine(x_time) + "," + (0);
+        return d;
+      });
+  }
+}
+
+// Creates line-charts when a tab is get clicked
 function tab_clicked(id) {
     clear_all_svg();
     timeline_color = 'red';
