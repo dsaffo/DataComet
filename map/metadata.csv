@@ -1,0 +1,5 @@
+dataset,Airframe,Date,Logging Duration,Distance
+milestone3,DJI Flame Wheel F450 Quadrotor x (4011),15-03-2019,0:03:21,638.0 m
+crash,DJI Flame Wheel F450 Quadrotor x (4011),02-04-2019,0:03:28,574.9 m
+epsilon,E-flite Convergence VTOL Tiltrotor (13012),02-04-2019,0:02:27,518.0 m
+spaghetti,DJI Flame Wheel F450 Quadrotor x (4011),03-04-2019,0:03:28,1.72 km
