@@ -169,8 +169,6 @@ var map = L.map("map-canvas",{center:[0,0],zoom:19,maxZoom:25,minZoom:16});
 var droneData = [];
 var start = [];
 var window2 = [];
-var widthSwitch = false;
-var colorSwitch = false;
 // tabs and radio
 var radioValue = 1;
 var yAttr = 'noise';
@@ -259,7 +257,7 @@ var yAttr = 'noise';
       
       selectedData = droneData.slice(window[0],window[1] + 1);
       
-      if (colorSwitch == true){
+      if (document.getElementById('colorSwitch').checked == true){
         colorScale = selectColorScale(selectedData,yAttr,cmap)
       }
       
@@ -282,7 +280,7 @@ var yAttr = 'noise';
             console.log(d.time);
         })
         .on('mouseout', function(d){
-          if (widthSwitch == true){
+          if (document.getElementById('widthSwitch').checked == true){
             
             d3.select(this).style('stroke-width', function(d){ return d[yAttr]});
           }
@@ -291,10 +289,10 @@ var yAttr = 'noise';
           }
         })
 
-      if (widthSwitch == true){
-        //console.log('width switch')
+      if (document.getElementById('widthSwitch').checked == true){
+        console.log('width switch')
         path.style('stroke-width', function(d){return d[yAttr];});
-        path.attr('stroke-width',  function(d){return d[yAttr];});
+        //path.attr('stroke-width',  function(d){return d[yAttr];});
       }
         
       
@@ -337,21 +335,9 @@ window.addEventListener('timeline_update', function (e) {
 });
 
 document.getElementById("widthSwitch").addEventListener("change", function(){
-  if (widthSwitch == false){
-    widthSwitch = true;
-  }
-  else{
-    widthSwitch = false;
-  }
   drawMap(window2);
 });
 document.getElementById("colorSwitch").addEventListener("change", function(){
-  if (colorSwitch == false){
-    colorSwitch = true;
-  }
-  else{
-    colorSwitch = false;
-  }
   drawMap(window2);
 });
 
@@ -407,9 +393,6 @@ document.getElementById('logSelect').addEventListener('change', function(){
   update_file_timeline(document.getElementById('logSelect').value);
   document.getElementById("colorSwitch").checked = false;
   document.getElementById("widthSwitch").checked = false;
-  colorSwitch = false;
-  widthSwitch = false;
-  drawMap(window2);
 });
 
 
@@ -431,6 +414,7 @@ function linkHoverOut(xAttr){
 
 loadData(document.getElementById('logSelect').value);
 update_file_timeline(document.getElementById('logSelect').value);
+
 
 </script>
     
