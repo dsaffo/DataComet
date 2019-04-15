@@ -42,6 +42,7 @@
 </head>
 
 <body>
+<body>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 
@@ -128,12 +129,11 @@
   <div class="row" id = "select_div">
     <div class="input-field col s12">
     <select>
-      <option value="" disabled selected>Choose your option</option>
       <option value="1">Option 1</option>
       <option value="2">Option 2</option>
       <option value="3">Option 3</option>
     </select>
-    <label>Materialize Select</label>
+    <label>Select Log</label>
   </div>
 </div>
   
@@ -180,6 +180,24 @@ var radioValue = 1;
 var yAttr = 'noise';
 
 
+  
+        
+    
+    //
+  function draw(data){
+    startlat = 323873506 / 10000000
+        startlon = -1170765251 / 10000000
+        
+      droneData = data.map(function(d){
+        endlat = d.lat/10000000  
+        endlon =  d.lon/10000000 
+        d.startlatLng = [+startlat,+startlon];    
+        d.endlatLng = [+endlat,+endlon];
+        startlat = endlat
+        startlon = endlon
+        return d;
+      });
+  console.log(droneData);
 
   function selectColorScale(data, value, cmap){
     
@@ -287,26 +305,12 @@ var yAttr = 'noise';
 
     }, options = {zoomDraw:false});
 
-    d3.csv("milestone3.csv",function(data){
-        startlat = 323873506 / 10000000
-        startlon = -1170765251 / 10000000
-        droneData = data.map(function(d){
-        endlat = d.lat/10000000  
-        endlon =  d.lon/10000000 
-        d.startlatLng = [+startlat,+startlon];    
-        d.endlatLng = [+endlat,+endlon];
-        // console.log("start",startlat,startlon)
-        // console.log("end",endlat,endlon)
-        startlat = endlat
-        startlon = endlon
-        //var max = d3.max(data,function(d){console.log('jam',typeof d['jamming_indicator']); return d['jamming_indicator']});
-        
-        //console.log('max',max);
-        return d;
-      });
-    pathOverlay.addTo(map);
-    });
+   pathOverlay.addTo(map);
   }
+    
+  
+//draw the path for the first time
+drawMap([0,droneData.length]);
 
   
 map.on('zoomend', function() {
@@ -380,7 +384,15 @@ $("input[name='group1']").change(function(){
   //console.log(new_attr, radio_value);
   drawMap(window2);
 });
+}
 
+  
+function loadData(file){
+  d3.csv(file, function(data){ draw(data)  });
+}
+
+loadData('milestone3.csv');  
+  
 </script>
     
     
