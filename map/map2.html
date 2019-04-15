@@ -271,6 +271,7 @@ var yAttr = 'noise';
         .on('mouseover', function(d){
             d3.select(this).style("cursor", "pointer"); 
             d3.select(this).style('stroke-width', d3.select(this).style('stroke-width') * 2);
+            set_hover_line(d.time);
         })
         .on('mouseout', function(d){
           if (widthSwitch == true){

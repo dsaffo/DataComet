@@ -521,6 +521,7 @@ function clear_all_svg() {
 
 // function to set the vertical-line on line charts upon hover on map
 function set_hover_line(x_time) {
+    console.log("set hover ran", x_time);
   for (var i = 0; i < 3; i++) {
     d3.select("#line"+i+" .mouse-line")
       .attr("d", function() {
@@ -592,8 +593,13 @@ function timeline_get_attribute(tab, value) {
     return attr;
 }
 
+// Updates the dataset
+function update_file_timeline(filename) {
+    create_graphs(filename, "time", "noise", "jamming_indicator", "rssi");
+}
+
 // Global variables that hold the line, xAxis and x-arrays of the line graphs
-filename = "milestone3.csv";
+var filename = "milestone3.csv";
 var line_array = [0,0,0];
 var xAxis_array = [0,0,0];
 var x_array = [0,0,0];
@@ -604,4 +610,4 @@ var window_dimensions = [0, 0];
 // Global color of the timeline (initially red but changes depending on radio value)
 var timeline_color = 'red'
 
-create_graphs(filename, "time", "noise", "jamming_indicator", "rssi");
+update_file_timeline(filename)
