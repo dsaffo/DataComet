@@ -92,5 +92,6 @@ function makeOneLineChart(csvFile, margin, xField, yField, divId, colr) {
     }); // csv close
 }
 
-makeAllLineCharts("milestone3.csv");
+
+//makeAllLineCharts("milestone3.csv");
 

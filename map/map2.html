@@ -132,6 +132,7 @@
       <select id='logSelect'>
         <option value="milestone3.csv">mileston 3</option>
         <option value="milestone3_modified.csv">mileston 3 moar</option>
+        <option value="spaghetti.csv">spaghetti</option>
       </select>
       <label>Select Log</label>
     </div>
@@ -186,9 +187,9 @@ var yAttr = 'noise';
     //
   function draw(data){
    
-    startlat = 323873506 / 10000000
-        startlon = -1170765251 / 10000000
-        
+      startlat = data[0].lat / 10000000;
+      startlon = data[0].lon / 10000000;
+    
       droneData = data.map(function(d){
         endlat = d.lat/10000000  
         endlon =  d.lon/10000000 
@@ -198,9 +199,9 @@ var yAttr = 'noise';
         startlon = endlon
         return d;
       });
-  console.log(droneData);
+  //console.log(droneData);
   window2 = [0, droneData.length];
-  console.log(window2);
+  //console.log(window2);
   function selectColorScale(data, value, cmap){
     
     max = d3.max(data, function(d){ return parseFloat(d[value]); });
@@ -266,6 +267,7 @@ var yAttr = 'noise';
       var path = sel.selectAll('path')
         .data(selectedData)
         .enter().append('path')
+        .attr('id', function(d){ return 'time:' + d.time; })
         .attr('stroke', function(d) { return colorScale(parseFloat(d[yAttr])) })
         .attr('id', 'drone')
         .attr('d', function(d){ return line([d.startlatLng,d.endlatLng])})
@@ -286,8 +288,9 @@ var yAttr = 'noise';
         })
 
       if (widthSwitch == true){
-        console.log('width switch')
-        path.style('stroke-width', function(d){ console.log(d[yAttr]); return d[yAttr];});
+        //console.log('width switch')
+        path.style('stroke-width', function(d){return d[yAttr];});
+        path.attr('stroke-width',  function(d){return d[yAttr];});
       }
         
       
@@ -398,12 +401,23 @@ function loadData(file){
 document.getElementById('logSelect').addEventListener('change', function(){
   loadData(document.getElementById('logSelect').value);
   update_file_timeline(document.getElementById('logSelect').value);
+  document.getElementById("colorSwitch").checked = false;
+  document.getElementById("widthSwitch").checked = false;
+  colorSwitch = false;
+  widthSwitch = false;
 });
 
 loadData(document.getElementById('logSelect').value);
 update_file_timeline(document.getElementById('logSelect').value);
-update_file_linecharts(document.getElementById('logSelect').value);
   
+function linkHoverOn(xAttr){
+  d3.select('time:' + xAttr).style('stroke-width', d3.select('time:' + xAttr).style('stroke-width') * 2);
+}
+
+function linkHoverOut(xAttr){
+  d3.select('time:' + xAttr).style('stroke-width', d3.select('time:' + xAttr).style('stroke-width') / 2);
+}
+
 </script>
     
     
