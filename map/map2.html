@@ -162,12 +162,7 @@
 <script>
     
 //the map
-var map = L.map("map-canvas",{center:[32.3873506, -117.0765251],zoom:19,maxZoom:25,minZoom:16});
-var Esri_WorldTopoMap = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-    maxZoom: 20,
-    maxNativeZoom: 18
-});
-Esri_WorldTopoMap.addTo(map);
+var map = L.map("map-canvas",{center:[0,0],zoom:19,maxZoom:25,minZoom:16});
 
   
 //some data holders  
@@ -186,9 +181,17 @@ var yAttr = 'noise';
     
     //
   function draw(data){
-   
+    
       startlat = data[0].lat / 10000000;
       startlon = data[0].lon / 10000000;
+      map.remove();
+      map = L.map("map-canvas",{center:[startlat,startlon],zoom:19,maxZoom:25,minZoom:16});
+      var Esri_WorldTopoMap = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        maxZoom: 20,
+        maxNativeZoom: 18
+      });
+      Esri_WorldTopoMap.addTo(map);
+
     
       droneData = data.map(function(d){
         endlat = d.lat/10000000  
@@ -321,7 +324,7 @@ drawMap([0,droneData.length]);
 
   
 map.on('zoomend', function() {
-  drawMap(window2,widthSwitch,colorSwitch);
+  drawMap(window2);
 });
   
 window.addEventListener('timeline_update', function (e) {
@@ -339,7 +342,7 @@ document.getElementById("widthSwitch").addEventListener("change", function(){
   else{
     widthSwitch = false;
   }
-  drawMap(window2,widthSwitch);
+  drawMap(window2);
 });
 document.getElementById("colorSwitch").addEventListener("change", function(){
   if (colorSwitch == false){
@@ -395,7 +398,7 @@ $("input[name='group1']").change(function(){
 
   
 function loadData(file){
-  d3.csv(file, function(data){ draw(data)  });
+  d3.csv(file, function(data){ draw(data);});
 }
   
 document.getElementById('logSelect').addEventListener('change', function(){
@@ -405,6 +408,7 @@ document.getElementById('logSelect').addEventListener('change', function(){
   document.getElementById("widthSwitch").checked = false;
   colorSwitch = false;
   widthSwitch = false;
+  drawMap(window2);
 });
 
 
