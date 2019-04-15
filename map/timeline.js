@@ -234,9 +234,9 @@ function create_timeline(filename, x_attr, y_attr, line_charts_arr, line_chart_a
                 .attr("class", "x label")
                 .attr("text-anchor", "end")
                 .attr("transform",
-                    "translate(" + (width) + " ," + 
+                    "translate(" + (width + margin.left) + " ," + 
                     (height + margin.top + 0.5*margin.bottom) + ")")
-                .style("font-size", "20px")
+                .style("font-size", "16px")
                 .text("Time (s)");
 
             handle = gBrush.selectAll(".handle--custom")
@@ -399,12 +399,12 @@ function create_line_chart(divId, filename, x_attr, y_attr, line_color) {
             // text label for the y axis
             svg.append("text")
                 .attr("transform", "rotate(-90)")
-                .attr("y", 0)
+                .attr("y", 0-0.01*margin.left)
                 .attr("x",0 - (height / 2))
                 .attr("dy", "1em")
                 .style("text-anchor", "middle")
-                .style("font-size", "16px")
-                .text(y_attr); 
+                .style("font-size", "15px")
+                .text(y_label_to_y_attr[y_attr]); 
 
             var mouseG = focus.append("g")
                 .attr("class", "mouse-over-effects");
@@ -431,7 +431,7 @@ function create_line_chart(divId, filename, x_attr, y_attr, line_color) {
                 .on('mouseout', function() { // on mouse out hide line, circles and text
                   for (var i = 0; i < 3; i++) {
                     d3.select("#line"+i+" .mouse-line")
-                    .style("opacity", "1");
+                    .style("opacity", "0");
                   }
                 })
                 .on('mouseover', function() { // on mouse in show line, circles and text
@@ -451,6 +451,11 @@ function create_line_chart(divId, filename, x_attr, y_attr, line_color) {
                       });
                   }
                 });
+        set_hover_line(0);
+        for (var i = 0; i < 3; i++) {
+            d3.select("#line"+i+" .mouse-line")
+            .style("opacity", "1");
+          }
         });
 
         arr = [line, xAxis, x];
@@ -538,7 +543,7 @@ function tab_clicked(id) {
     clear_all_svg();
     timeline_color = 'red';
     if (id == 'tab1') {
-        create_graphs(filename, "time", "noise", "jamming_indicator", "rssi");
+        create_graphs(filename, "time", "noise_per_ms", "jamming_indicator", "rssi");
     }
     else if (id == 'tab2') {
         create_graphs(filename, "time", "alt", "vel_m_s", "satellites_used");    
@@ -572,7 +577,7 @@ function timeline_get_attribute(tab, value) {
     console.log(tab);
     console.log(value);
     var attr = "";
-    var security_attrs = ["noise", "jamming_indicator", "rssi"];
+    var security_attrs = ["noise_per_ms", "jamming_indicator", "rssi"];
     var physical_attrs = ["alt", "vel_m_s", "satellites_used"];
     var system_attrs = ["load", "ram_usage", "voltage_filtered_v"];
     var env_attrs = ["baro_temp_celcius", "baro_pressure_pa", "remaining"];
@@ -598,7 +603,7 @@ function timeline_get_attribute(tab, value) {
 function update_file_timeline(fileNew) {
     filename = fileNew;
     window_dimensions = [0, 0];
-    create_graphs(filename, "time", "noise", "jamming_indicator", "rssi");
+    create_graphs(filename, "time", "noise_per_ms", "jamming_indicator", "rssi");
 }
 
 // Global variables that hold the line, xAxis and x-arrays of the line graphs
@@ -613,4 +618,19 @@ var window_dimensions = [0, 0];
 // Global color of the timeline (initially red but changes depending on radio value)
 var timeline_color = 'red'
 
+// Dictionarry to nicely label y-axes given an y attribute
+var y_label_to_y_attr = {
+    "noise_per_ms": "Noise (m/s)",
+    "jamming_indicator": "Jamming",
+    "rssi": "Signal Strength (RSSI)",
+    "alt": "Altitude (mm)",
+    "vel_m_s": "Velocity (m/s)",
+    "satellites_used": "Satellites Used",
+    "load": "CPU Load",
+    "ram_usage": "Ram Usage",
+    "voltage_filtered_v": "Voltage (V)",
+    "baro_temp_celcius": "Temperature (Celcius)",
+    "baro_pressure_pa": "Pressure (Pa)",
+    "remaining": "Battery remaining (%)"
+  };
 //update_file_timeline(filename)
