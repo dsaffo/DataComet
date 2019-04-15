@@ -126,16 +126,16 @@
       </ul>
     </div>
   </div>
+  
   <div class="row" id = "select_div">
     <div class="input-field col s12">
-    <select>
-      <option value="1">Option 1</option>
-      <option value="2">Option 2</option>
-      <option value="3">Option 3</option>
-    </select>
-    <label>Select Log</label>
+      <select id='logSelect'>
+        <option value="milestone3.csv">mileston 3</option>
+        <option value="milestone3_modified.csv">mileston 3 moar</option>
+      </select>
+      <label>Select Log</label>
+    </div>
   </div>
-</div>
   
 
 <script src="timeline.js"></script>
@@ -185,6 +185,7 @@ var yAttr = 'noise';
     
     //
   function draw(data){
+   
     startlat = 323873506 / 10000000
         startlon = -1170765251 / 10000000
         
@@ -198,7 +199,8 @@ var yAttr = 'noise';
         return d;
       });
   console.log(droneData);
-
+  window2 = [0, droneData.length];
+  console.log(window2);
   function selectColorScale(data, value, cmap){
     
     max = d3.max(data, function(d){ return parseFloat(d[value]); });
@@ -284,7 +286,8 @@ var yAttr = 'noise';
         })
 
       if (widthSwitch == true){
-        path.style('stroke-width', function(d){ return d[yAttr];});
+        console.log('width switch')
+        path.style('stroke-width', function(d){ console.log(d[yAttr]); return d[yAttr];});
       }
         
       
@@ -391,8 +394,15 @@ $("input[name='group1']").change(function(){
 function loadData(file){
   d3.csv(file, function(data){ draw(data)  });
 }
+  
+document.getElementById('logSelect').addEventListener('change', function(){
+  loadData(document.getElementById('logSelect').value);
+  update_file_timeline(document.getElementById('logSelect').value);
+});
 
-loadData('milestone3.csv');  
+loadData(document.getElementById('logSelect').value);
+update_file_timeline(document.getElementById('logSelect').value);
+update_file_linecharts(document.getElementById('logSelect').value);
   
 </script>
     

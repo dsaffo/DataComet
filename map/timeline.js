@@ -369,7 +369,7 @@ function create_line_chart(divId, filename, x_attr, y_attr, line_color) {
 
         d3.csv(filename, type, function (error, data) {
             if (error) throw error;
-        
+            console.log(filename);
             x.domain(d3.extent(data, function(d) { return d[x_attr]; }));
             y.domain([d3.min(data, function (d) { return d[y_attr]; }), d3.max(data, function (d) { return d[y_attr]; })]);
             xAxisLine = x;
@@ -534,19 +534,20 @@ function set_hover_line(x_time) {
 
 // Creates line-charts when a tab is get clicked
 function tab_clicked(id) {
+    console.log(filename);
     clear_all_svg();
     timeline_color = 'red';
     if (id == 'tab1') {
-        create_graphs("milestone3.csv", "time", "noise", "jamming_indicator", "rssi");
+        create_graphs(filename, "time", "noise", "jamming_indicator", "rssi");
     }
     else if (id == 'tab2') {
-        create_graphs("milestone3.csv", "time", "alt", "vel_m_s", "satellites_used");    
+        create_graphs(filename, "time", "alt", "vel_m_s", "satellites_used");    
     }
     else if (id == 'tab3') {
-        create_graphs("milestone3.csv", "time", "load", "ram_usage", "voltage_filtered_v");
+        create_graphs(filename, "time", "load", "ram_usage", "voltage_filtered_v");
     }
     else if (id == 'tab4') {
-        create_graphs("milestone3.csv", "time", "baro_temp_celcius", "baro_pressure_pa", "remaining");
+        create_graphs(filename, "time", "baro_temp_celcius", "baro_pressure_pa", "remaining");
     }
 }
 
@@ -594,7 +595,9 @@ function timeline_get_attribute(tab, value) {
 }
 
 // Updates the dataset
-function update_file_timeline(filename) {
+function update_file_timeline(fileNew) {
+    filename = fileNew;
+    window_dimensions = [0, 0];
     create_graphs(filename, "time", "noise", "jamming_indicator", "rssi");
 }
 
@@ -610,4 +613,4 @@ var window_dimensions = [0, 0];
 // Global color of the timeline (initially red but changes depending on radio value)
 var timeline_color = 'red'
 
-update_file_timeline(filename)
+//update_file_timeline(filename)
