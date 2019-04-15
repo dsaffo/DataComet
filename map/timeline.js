@@ -433,12 +433,19 @@ function create_line_chart(divId, filename, x_attr, y_attr, line_color) {
                     d3.select("#line"+i+" .mouse-line")
                     .style("opacity", "0");
                   }
+                  var mouse = d3.mouse(this);
+                //   if (hovered_line != parseInt(x.invert(mouse[0]))) {
+                      linkHoverOut(hovered_line);
+                //   }
                 })
                 .on('mouseover', function() { // on mouse in show line, circles and text
                   for (var i = 0; i < 3; i++) {
                     d3.select("#line"+i+" .mouse-line")
                     .style("opacity", "1");
                   }
+                  var mouse = d3.mouse(this);
+                  linkHoverOn(parseInt(x.invert(mouse[0])));
+                  hovered_line = parseInt(x.invert(mouse[0]));
                 })
                 .on('mousemove', function() { // mouse moving over canvas
                   var mouse = d3.mouse(this);
@@ -450,6 +457,9 @@ function create_line_chart(divId, filename, x_attr, y_attr, line_color) {
                         return d;
                       });
                   }
+                  linkHoverOut(hovered_line);
+                  linkHoverOn(parseInt(x.invert(mouse[0])));
+                  hovered_line = parseInt(x.invert(mouse[0]));
                 });
         set_hover_line(0);
         for (var i = 0; i < 3; i++) {
@@ -526,15 +536,15 @@ function clear_all_svg() {
 
 // function to set the vertical-line on line charts upon hover on map
 function set_hover_line(x_time) {
-    console.log("set hover ran", x_time);
-  for (var i = 0; i < 3; i++) {
-    d3.select("#line"+i+" .mouse-line")
-      .attr("d", function() {
-        var d = "M" + xAxisLine(x_time) + "," + (lineChartsHeight);
-        d += " " + xAxisLine(x_time) + "," + (0);
-        return d;
-      });
-  }
+    for (var i = 0; i < 3; i++) {
+        d3.select("#line"+i+" .mouse-line")
+            .style("opacity", "1")
+            .attr("d", function() {
+                var d = "M" + xAxisLine(x_time) + "," + (lineChartsHeight);
+                d += " " + xAxisLine(x_time) + "," + (0);
+                return d;
+        });
+    }
 }
 
 // Creates line-charts when a tab is get clicked
@@ -616,7 +626,8 @@ var x_array = [0,0,0];
 var window_dimensions = [0, 0];
 
 // Global color of the timeline (initially red but changes depending on radio value)
-var timeline_color = 'red'
+var timeline_color = 'red';
+var hovered_line = 0;
 
 // Dictionarry to nicely label y-axes given an y attribute
 var y_label_to_y_attr = {

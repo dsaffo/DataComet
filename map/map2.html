@@ -229,7 +229,7 @@ var yAttr = 'noise';
    
     var pathOverlay = L.d3SvgOverlay(function(sel,proj){
      
-      d3.selectAll('#drone').remove();
+      d3.selectAll('.drone').remove();
       d3.selectAll('circle').remove();
       
       selectedData = [];
@@ -269,13 +269,14 @@ var yAttr = 'noise';
         .enter().append('path')
         .attr('id', function(d){ return 'time:' + d.time; })
         .attr('stroke', function(d) { return colorScale(parseFloat(d[yAttr])) })
-        .attr('id', 'drone')
+        .attr('class', 'drone')
         .attr('d', function(d){ return line([d.startlatLng,d.endlatLng])})
         .style('stroke-width', map.getZoom())
         .on('mouseover', function(d){
             d3.select(this).style("cursor", "pointer"); 
             d3.select(this).style('stroke-width', d3.select(this).style('stroke-width') * 2);
             set_hover_line(d.time);
+            console.log(d.time);
         })
         .on('mouseout', function(d){
           if (widthSwitch == true){
@@ -410,13 +411,19 @@ document.getElementById('logSelect').addEventListener('change', function(){
 
   
 function linkHoverOn(xAttr){
-  d3.select('time:' + xAttr).style('stroke-width', d3.select('time:' + xAttr).style('stroke-width') * 2);
+  d3.select('[id="time:'+xAttr+'"]')
+    .style('stroke-width', d3.select('[id="time:'+xAttr+'"]')
+                            .style('stroke-width') * 2);
 }
 
 function linkHoverOut(xAttr){
-  d3.select('time:' + xAttr).style('stroke-width', d3.select('time:' + xAttr).style('stroke-width') / 2);
+  // Make sure the xAttr value is valid
+  if (xAttr >= 0) {
+    d3.select('[id="time:'+xAttr+'"]')
+    .style('stroke-width', d3.select('[id="time:'+xAttr+'"]')
+                            .style('stroke-width') / 2);
+  }
 }
-  
 
 loadData(document.getElementById('logSelect').value);
 update_file_timeline(document.getElementById('logSelect').value);
