@@ -87,19 +87,19 @@
           <p id='radio1'>
             <label>
               <input name="group1" type="radio" value="1" id="radio1_input" checked />
-              <span style="top: 40%; left: 20%"></span>
+              <span style="top: 30%; left: 20%"></span>
             </label>
           </p>
           <p id='radio2'>
             <label>
               <input name="group1" type="radio" value="2" id="radio2_input"/>
-              <span style="top: 40%; left: 20%"></span>
+              <span style="top: 30%; left: 20%"></span>
             </label>
           </p>
           <p id='radio3'>
             <label>
               <input name="group1" type="radio" value="3" id="radio3_input"/>
-              <span style="top: 40%; left: 20%"></span>
+              <span style="top: 30%; left: 20%"></span>
             </label>
           </p>
         </form>
@@ -119,10 +119,10 @@
   <div class="row" id="tabs_div">
     <div class="col s12">
       <ul class="tabs">
-        <li class="tab col s3" id='tab1'><a class="active" href="#1" style="font-size: 16px">Security</a></li>
+        <li class="tab col s3" id='tab1'><a class="active" href="#1" style="font-size: 16px">Signal</a></li>
         <li class="tab col s3" id='tab2'><a href="#2" style="font-size: 16px">Physical</a></li>
         <li class="tab col s3" id='tab3'><a href="#3" style="font-size: 16px">System</a></li>
-        <li class="tab col s3" id='tab4'><a href="#4" style="font-size: 16px">Env.</a></li>
+        <li class="tab col s3" id='tab4'><a href="#4" style="font-size: 16px">Misc.</a></li>
       </ul>
     </div>
   </div>
@@ -402,7 +402,7 @@ document.getElementById('logSelect').addEventListener('change', function(){
 
 loadData(document.getElementById('logSelect').value);
 update_file_timeline(document.getElementById('logSelect').value);
-update_file_linecharts(document.getElementById('logSelect').value);
+// update_file_linecharts(document.getElementById('logSelect').value);
   
 </script>
     
