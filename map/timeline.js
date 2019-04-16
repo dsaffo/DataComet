@@ -558,7 +558,7 @@ function set_hover_line_out(x_time) {
 function tab_clicked(id) {
     console.log(filename);
     clear_all_svg();
-    timeline_color = 'red';
+    timeline_color = '#e41a1c';
     if (id == 'tab1') {
         create_graphs(filename, "time", "noise_per_ms", "jamming_indicator", "rssi");
     }
@@ -575,16 +575,16 @@ function tab_clicked(id) {
 
 // Creates the timeline as well as 3 line graphs which are all brush-zoom linked
 function create_graphs(filename, x_attr, y_attr1, y_attr2, y_attr3) {
-    create_line_chart("#line0",filename, x_attr, y_attr1, "red");
-    create_line_chart("#line1",filename, x_attr, y_attr2, "blue");
-    create_line_chart("#line2",filename, x_attr, y_attr3, "green");
+    create_line_chart("#line0",filename, x_attr, y_attr1, "#e41a1c");
+    create_line_chart("#line1",filename, x_attr, y_attr2, "#377eb8");
+    create_line_chart("#line2",filename, x_attr, y_attr3, "#4daf4a");
     create_timeline(filename, x_attr, y_attr1, line_array, xAxis_array, x_array);
 }
 
 // Removes timeline SVG and redraws timeline using a new y-attr and appropriate color
 function update_timeline(y_attr, value) {
     $('#timeline').empty();
-    colors = ['red', 'blue', 'green'];
+    colors = ['red', '#377eb8', '#4daf4a'];
     timeline_color = colors[value-1];
     create_timeline(filename, "time", y_attr, line_array, xAxis_array, x_array);
 }
@@ -633,7 +633,7 @@ var x_array = [0,0,0];
 var window_dimensions = [0, 0];
 
 // Global color of the timeline (initially red but changes depending on radio value)
-var timeline_color = 'red';
+var timeline_color = '#e41a1c';
 var hovered_line = 0;
 
 // Dictionarry to nicely label y-axes given an y attribute
