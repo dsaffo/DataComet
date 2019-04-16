@@ -157,13 +157,13 @@
     <div class="row" id = "select_div">
       <div class="input-field col s12">
         <select id='logSelect'>
-          <option value="milestone3.csv">clean</option>
-          <option value="milestone3_modified.csv">clean (more data)</option>
-          <option value="spaghetti.csv">spaghetti</option>
-          <option value="crash.csv">crash</option>
-          <option value="epsilon.csv">crash epsilon</option>
-          <option value="new.csv">long</option>
-          <option value="northeastern.csv">northeastern</option>
+          <option value="milestone3.csv">Simple Path</option>
+          <option value="milestone3_modified.csv">Simple Path (finer data)</option>
+          <option value="spaghetti.csv">Complex Overlapping Path</option>
+          <option value="crash.csv">Crash 1</option>
+          <option value="epsilon.csv">Crash 2</option>
+          <option value="new.csv">Long Flight Time (slow)</option>
+          <option value="northeastern.csv">Short Flight at Northeastern</option>
           <!--<option value="huge.csv">huge</option>-->
           <!--<option value="straight.csv">straight</option>-->
         </select>
@@ -182,15 +182,30 @@
       <!-- Modal Structure -->
       <div id="modal1" class="modal">
         <div class="modal-content">
-          <h4>Data Comets</h4>
+                  <h4>Data Comets</h4>
           <p>INSERT NAMES HERE</p>
-          <p><b>Motivation</b>: </p>
-          <p>Data</p>
-          <p>Task Analysis</p>
+          <p><b>Motivation</b>: 
+	     <br>
+          Data Comets is an interactive tool for visualizing unmanned aerial vehicle (UAV) flight logs. UAVs can range from being sophisticated quadcopters made for capturing film and images, to a simple hobbyist remote control fixed wing plane. In either case data needs to be sent, received, and captured in order to for the UAV to operate as intended. Many sensors, and metrics are used to record this data in order to ensure that all UAV functions are working. In the event the UAV does not operate normally, it is important to be able to look at the flight log to identify not only what went wrong but when and where as well. Data Comets lets you visualize flight log data not only in time but also in space, as well as making it easy to analyze multivariate data together.  
+          </p>
+          <p>Data:
+          <br>
+          Our data is coming from a public database of drone flight logs <a href="https://logs.px4.io/browse">LINK</a>. The logs come from drones using the PX4 flight control software. You can search this database for certain features you would want, such has flight time, drone model, or number of errors. You can also view each log and all of its respective sensor and location data with auto 
+          generated plots. This allows us to preview the data to determine if it is worth downloading. We can download the raw flight logs as UGL files. These files are encrypted but we can use a available python cli tool to convert the UGL files to csv files. The tool generates several csv files for each of the different sensor or location data in the flight log. We identify and merge the data that we are particularly interested in. This includes data for; location, battery, gps signal, jamming sensor, vibrations, and cpu/ram usage. Our data is a mix of ordinal and quantitative data. </p>
+          <p>Task Analysis:
+          <br>
+            1. View UAV path in time and space
+          <br>
+            2. View temporal abnormalities
+          <br>
+            3. View multivariate UAV data
+          <br>
+            4. Filter data based on time
           <p>Design Process</p>
-          <p>Final Visualization</p>
+          <p><b>Final Visualization</b>: We went through various iterations of our design … Our visualization w</p>
           <p>Data Analysis</p>
           <p>Conclusion</p>
+
         </div>
         <!-- <div class="modal-footer">
           <a href="#!" class="modal-close waves-effect waves-green btn-flat">Agree</a>
