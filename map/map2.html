@@ -44,13 +44,13 @@
     #radio3 {height:33.3%; bottom:0%}
     #tabs_div {height: 3%; width: 30%; float:right; margin-bottom: 0px;}
     #select_div {height: 3%; width: 30%; float:right; margin-top: 30px;} */
-  
+
   .dronePathStyle{
     fill: none;
     stroke: red;
     stroke-width: var(--element-width);
   }
-  
+
 </style>
 </head>
 
@@ -81,13 +81,13 @@
     </div>
     </div>
   </div>
- 
-  
+
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js"></script>
-      
+
   <script src="https://d3js.org/d3.v4.min.js"></script>
   <script src="L.D3SvgOverlay.js"></script>
-      
+
   <script src="https://d3js.org/d3-selection-multi.v0.4.min.js"></script>
 
   <!-- Create Timeline and Line Graphs -->
@@ -141,13 +141,18 @@
         </ul>
       </div>
     </div>
-    
+
     <div class="row" id = "select_div">
       <div class="input-field col s12">
         <select id='logSelect'>
-          <option value="milestone3.csv">mileston 3</option>
-          <option value="milestone3_modified.csv">mileston 3 moar</option>
+          <option value="milestone3.csv">clean</option>
+          <option value="milestone3_modified.csv">clean (more data)</option>
           <option value="spaghetti.csv">spaghetti</option>
+          <option value="crash.csv">crash</option>
+          <option value="epsilon.csv">crash epsilon</option>
+          <option value="new.csv">long</option>
+          <option value="huge.csv">huge</option>
+          <option value="straight.csv">straight</option>
         </select>
         <label>Select Log</label>
       </div>
@@ -183,8 +188,8 @@
 <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
 
 
-    
-            
+
+
 
   <!-- <script src="line-charts.js"></script> -->
 
@@ -195,12 +200,12 @@
 
 
 <script>
-    
+
 //the map
 var map = L.map("map-canvas",{center:[0,0],zoom:19,maxZoom:25,minZoom:1});
 
-  
-//some data holders  
+
+//some data holders
 var droneData = [];
 var start = [];
 var window2 = [];
@@ -209,12 +214,12 @@ var radioValue = 1;
 var yAttr = 'noise_per_ms';
 
 
-  
-        
-    
+
+
+
     //
   function draw(data){
-    
+
       startlat = data[0].lat / 10000000;
       startlon = data[0].lon / 10000000;
       map.remove();
@@ -225,11 +230,11 @@ var yAttr = 'noise_per_ms';
       });
       Esri_WorldTopoMap.addTo(map);
 
-    
+
       droneData = data.map(function(d){
-        endlat = d.lat/10000000  
-        endlon =  d.lon/10000000 
-        d.startlatLng = [+startlat,+startlon];    
+        endlat = d.lat/10000000
+        endlon =  d.lon/10000000
+        d.startlatLng = [+startlat,+startlon];
         d.endlatLng = [+endlat,+endlon];
         startlat = endlat
         startlon = endlon
@@ -239,26 +244,26 @@ var yAttr = 'noise_per_ms';
   window2 = [0, droneData.length];
   //console.log(window2);
   function selectColorScale(data, value, cmap){
-    
+
     max = d3.max(data, function(d){ return parseFloat(d[value]); });
     min = d3.min(data, function(d){ return parseFloat(d[value]); });
     //console.log(min,max)
     var colorScale = d3.scaleSequential(d3["interpolate" + cmap])
         .domain([min, max]);
-    
+
     return colorScale;
   }
-    
+
   function widthScale(data, value){
     max = d3.max(data, function(d){ return parseFloat(d[value]); });
     min = d3.min(data, function(d){ return parseFloat(d[value]); });
     return widthScaler = d3.scaleLinear().domain([min, max]).range([1,40]);
   }
-  
+
   function drawMap(window){
-    
+
     var cmap = 'Reds'
-    
+
     if (radioValue == 1){
       cmap = 'Reds'
     }
@@ -268,44 +273,44 @@ var yAttr = 'noise_per_ms';
     else{
       cmap = 'Greens'
     }
-   
+
     var pathOverlay = L.d3SvgOverlay(function(sel,proj){
-     
+
       d3.selectAll('.drone').remove();
       d3.selectAll('circle').remove();
-      
+
       selectedData = [];
-      
+
       //color scale for battery
       //var max = d3.max(droneData,function(d){return parseInt(d['jamming_indicator'])});
       //var median = d3.median(droneData,function(d){return d.jamming_indicator});
       //console.log('max',max);
       //var colorScale = d3.scaleSequential(d3.interpolateReds).domain([0, max]);
-     
+
       //our line generator
       var line = d3.line()
         .x(function(d){ return proj.latLngToLayerPoint(d).x; })
         .y(function(d){ return proj.latLngToLayerPoint(d).y; })
 
-    
-      
+
+
       //timeWindow = window;
-      window2 = window; 
+      window2 = window;
 
       //for(i = timeWindow[0]; i < timeWindow[1]; i++){
       //  selectedData.push(droneData[i])
       //}
-      
+
       selectedData = droneData.slice(window[0],window[1] + 1);
-      
+
       if (document.getElementById('colorSwitch').checked == true){
         colorScale = selectColorScale(selectedData,yAttr,cmap)
       }
-      
-      else{ 
+
+      else{
         colorScale = selectColorScale(droneData,yAttr,cmap)
       }
-     
+
       var path = sel.selectAll('path')
         .data(selectedData)
         .enter().append('path')
@@ -315,14 +320,14 @@ var yAttr = 'noise_per_ms';
         .attr('d', function(d){ return line([d.startlatLng,d.endlatLng])})
         .style('stroke-width', map.getZoom())
         .on('mouseover', function(d){
-            d3.select(this).style("cursor", "pointer"); 
+            d3.select(this).style("cursor", "pointer");
             d3.select(this).style('stroke-width', d3.select(this).style('stroke-width') * 2);
             set_hover_line(d.time);
             //console.log(d.time);
         })
         .on('mouseout', function(d){
           if (document.getElementById('widthSwitch').checked == true){
-            
+
             d3.select(this).style('stroke-width', function(d){ return d[yAttr]});
           }
           else{
@@ -341,8 +346,8 @@ var yAttr = 'noise_per_ms';
         path.style('stroke-width', function(d){return widthScaler(d[yAttr]);});
         //path.attr('stroke-width',  function(d){return d[yAttr];});
       }
-        
-      
+
+
 
       var circle = sel.append("circle")
                       .attr("cx", function(d){return proj.latLngToLayerPoint(selectedData[selectedData.length - 1].endlatLng).x;})
@@ -351,28 +356,28 @@ var yAttr = 'noise_per_ms';
                       .attr('fill',function(d){return colorScale(selectedData[selectedData.length - 1][yAttr])});
 
 
-  
+
 
 
       //console.log('zoom', map.getZoom());
       //console.log('scale', proj.scale);
 
-  
+
 
     }, options = {zoomDraw:false});
 
    pathOverlay.addTo(map);
   }
-    
-  
+
+
 //draw the path for the first time
 drawMap([0,droneData.length]);
 
-  
+
 map.on('zoomend', function() {
   drawMap(window2);
 });
-  
+
 window.addEventListener('timeline_update', function (e) {
   //if(colorSwitch == true){
   //  colorSwitch = false;
@@ -439,11 +444,11 @@ $("input[name='group1']").change(function(){
 });
 }
 
-  
+
 function loadData(file){
   d3.csv(file, function(data){ draw(data);});
 }
-  
+
 document.getElementById('logSelect').addEventListener('change', function(){
   loadData(document.getElementById('logSelect').value);
   update_file_timeline(document.getElementById('logSelect').value);
@@ -452,7 +457,7 @@ document.getElementById('logSelect').addEventListener('change', function(){
 });
 
 
-  
+
 function linkHoverOn(xAttr){
   d3.select('[id="time:'+xAttr+'"]')
     .style('stroke-width', d3.select('[id="time:'+xAttr+'"]')
@@ -473,7 +478,7 @@ update_file_timeline(document.getElementById('logSelect').value);
 
 
 </script>
-    
-    
+
+
 </body>
 </html>
