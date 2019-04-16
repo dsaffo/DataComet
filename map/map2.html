@@ -12,6 +12,7 @@
   <!-- Materialize CSS -->
   <!-- Compiled and minified CSS -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
   <!-- Jquery -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -21,7 +22,19 @@
     body { height: 100%; margin: 0; padding: 0 }
     #map-canvas { height: 90%; width: 70%; float:left;}
     #timeline_div {height: 10%; width: 70%; bottom: 10px; position: absolute; margin-top: 20px;}
-    #graphs_div {height: 80%; width: 30%; float:right;}
+    #right_bar_div {height:100%; width:30%; float:right}
+    #graphs_div {height: 80%; width: 100%;}
+    #line1_div {width: 95%; height:33.3%; top: 0; right: 0; float: right}
+    #line2_div {width: 95%; height:33.3%; top:30% ; right: 0; float:right}
+    #line3_div {width: 95%; height:33.3%; top:60% ; right: 0; float:right;}
+    #radio_div {width: 5%; height:100%; float:left}
+    #radio1 {height:33.3%; bottom:0%}
+    #radio2 {height:33.3%; bottom:0%}
+    #radio3 {height:33.3%; bottom:0%}
+    #tabs_div {height: 2%; width: 100%;}
+    #select_div {height: 2%; width: 100%;}
+    #modal_div {height:5%; width: 15%; float:right;}
+    /* #graphs_div {height: 80%; width: 30%; float:right;}
     #line1_div {width: 95%; height:33.3%; top: 0; right: 0; float: right}
     #line2_div {width: 95%; height:33.3%; top:30% ; right: 0; float:right}
     #line3_div {width: 95%; height:33.3%; top:60% ; right: 0; float:right;}
@@ -30,7 +43,7 @@
     #radio2 {height:33.3%; bottom:0%}
     #radio3 {height:33.3%; bottom:0%}
     #tabs_div {height: 3%; width: 30%; float:right; margin-bottom: 0px;}
-    #select_div {height: 3%; width: 30%; float:right; margin-top: 30px;}
+    #select_div {height: 3%; width: 30%; float:right; margin-top: 30px;} */
   
   .dronePathStyle{
     fill: none;
@@ -81,63 +94,85 @@
   <div id='timeline_div'>
     <svg width="1360" height="150" id='timeline'></svg>
   </div>
-  <div id="graphs_div">
-    <div id="radio_div">
-        <form action="#" style="height: 100%;">
-          <p id='radio1'>
-            <label>
-              <input name="group1" type="radio" value="1" id="radio1_input" checked />
-              <span style="top: 30%; left: 20%"></span>
-            </label>
-          </p>
-          <p id='radio2'>
-            <label>
-              <input name="group1" type="radio" value="2" id="radio2_input"/>
-              <span style="top: 30%; left: 20%"></span>
-            </label>
-          </p>
-          <p id='radio3'>
-            <label>
-              <input name="group1" type="radio" value="3" id="radio3_input"/>
-              <span style="top: 30%; left: 20%"></span>
-            </label>
-          </p>
-        </form>
+
+  <div id='right_bar_div'>
+    <div id="graphs_div">
+      <div id="radio_div">
+          <form action="#" style="height: 100%;">
+            <p id='radio1'>
+              <label>
+                <input name="group1" type="radio" value="1" id="radio1_input" checked />
+                <span style="top: 30%; left: 20%"></span>
+              </label>
+            </p>
+            <p id='radio2'>
+              <label>
+                <input name="group1" type="radio" value="2" id="radio2_input"/>
+                <span style="top: 30%; left: 20%"></span>
+              </label>
+            </p>
+            <p id='radio3'>
+              <label>
+                <input name="group1" type="radio" value="3" id="radio3_input"/>
+                <span style="top: 30%; left: 20%"></span>
+              </label>
+            </p>
+          </form>
+        </div>
+      <div id='line1_div'>
+        <svg width="570" height="300" id='line0'></svg>
       </div>
-    <div id='line1_div'>
-      <svg width="570" height="300" id='line0'></svg>
+      <div id="line2_div">
+        <svg width="570" height="300" id='line1'></svg>
+      </div>
+      <div id="line3_div">
+        <svg width="570" height="300" id='line2'></svg>
+      </div>
     </div>
-    <div id="line2_div">
-      <svg width="570" height="300" id='line1'></svg>
+
+    <!-- Create Tabs -->
+    <div class="row" id="tabs_div">
+      <div class="col s12">
+        <ul class="tabs">
+          <li class="tab col s3" id='tab1'><a class="active" href="#1" style="font-size: 16px">Signal</a></li>
+          <li class="tab col s3" id='tab2'><a href="#2" style="font-size: 16px">Physical</a></li>
+          <li class="tab col s3" id='tab3'><a href="#3" style="font-size: 16px">System</a></li>
+          <li class="tab col s3" id='tab4'><a href="#4" style="font-size: 16px">Misc.</a></li>
+        </ul>
+      </div>
     </div>
-    <div id="line3_div">
-      <svg width="570" height="300" id='line2'></svg>
+    
+    <div class="row" id = "select_div">
+      <div class="input-field col s12">
+        <select id='logSelect'>
+          <option value="milestone3.csv">mileston 3</option>
+          <option value="milestone3_modified.csv">mileston 3 moar</option>
+          <option value="spaghetti.csv">spaghetti</option>
+        </select>
+        <label>Select Log</label>
+      </div>
+    </div>
+
+
+    <div id="modal_div">
+      <!-- Modal Trigger -->
+      <a class="waves-effect waves-light modal-trigger btn-floating btn-large red" href="#modal1">
+        <i class="medium material-icons" style="font-size: 2.8rem;">info_outline</i>
+      </a>
+
+      <!-- Modal Structure -->
+      <div id="modal1" class="modal">
+        <div class="modal-content">
+          <h4>Data Comets</h4>
+          <p></p>
+        </div>
+        <!-- <div class="modal-footer">
+          <a href="#!" class="modal-close waves-effect waves-green btn-flat">Agree</a>
+        </div> -->
+      </div>
     </div>
   </div>
 
-  <!-- Create Tabs -->
-  <div class="row" id="tabs_div">
-    <div class="col s12">
-      <ul class="tabs">
-        <li class="tab col s3" id='tab1'><a class="active" href="#1" style="font-size: 16px">Signal</a></li>
-        <li class="tab col s3" id='tab2'><a href="#2" style="font-size: 16px">Physical</a></li>
-        <li class="tab col s3" id='tab3'><a href="#3" style="font-size: 16px">System</a></li>
-        <li class="tab col s3" id='tab4'><a href="#4" style="font-size: 16px">Misc.</a></li>
-      </ul>
-    </div>
-  </div>
-  
-  <div class="row" id = "select_div">
-    <div class="input-field col s12">
-      <select id='logSelect'>
-        <option value="milestone3.csv">mileston 3</option>
-        <option value="milestone3_modified.csv">mileston 3 moar</option>
-        <option value="spaghetti.csv">spaghetti</option>
-      </select>
-      <label>Select Log</label>
-    </div>
-  </div>
-  
 
 <script src="timeline.js"></script>
 <script src="https://d3js.org/d3-scale-chromatic.v0.3.min.js"></script>
@@ -341,12 +376,21 @@ document.getElementById("colorSwitch").addEventListener("change", function(){
   drawMap(window2);
 });
 
+// Initializing Materialize objects
 $(document).ready(function(){
     $('.tabs').tabs();
 });
  $(document).ready(function(){
     $('select').formSelect();
   });
+
+$(document).ready(function(){
+  $('.modal').modal();
+});
+
+$(document).ready(function(){
+  $('.fixed-action-btn').floatingActionButton();
+});
 
 $(".tab").click(function() {
   id = this.id
