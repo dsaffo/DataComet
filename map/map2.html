@@ -197,7 +197,7 @@
 <script>
     
 //the map
-var map = L.map("map-canvas",{center:[0,0],zoom:19,maxZoom:25,minZoom:16});
+var map = L.map("map-canvas",{center:[0,0],zoom:19,maxZoom:25,minZoom:1});
 
   
 //some data holders  
@@ -206,7 +206,7 @@ var start = [];
 var window2 = [];
 // tabs and radio
 var radioValue = 1;
-var yAttr = 'noise';
+var yAttr = 'noise_per_ms';
 
 
   
@@ -218,7 +218,7 @@ var yAttr = 'noise';
       startlat = data[0].lat / 10000000;
       startlon = data[0].lon / 10000000;
       map.remove();
-      map = L.map("map-canvas",{center:[startlat,startlon],zoom:19,maxZoom:25,minZoom:16});
+      map = L.map("map-canvas",{center:[startlat,startlon],zoom:19,maxZoom:25,minZoom:1});
       var Esri_WorldTopoMap = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
         maxZoom: 20,
         maxNativeZoom: 18
@@ -247,6 +247,12 @@ var yAttr = 'noise';
         .domain([min, max]);
     
     return colorScale;
+  }
+    
+  function widthScale(data, value){
+    max = d3.max(data, function(d){ return parseFloat(d[value]); });
+    min = d3.min(data, function(d){ return parseFloat(d[value]); });
+    return widthScaler = d3.scaleLinear().domain([min, max]).range([1,40]);
   }
   
   function drawMap(window){
@@ -312,7 +318,7 @@ var yAttr = 'noise';
             d3.select(this).style("cursor", "pointer"); 
             d3.select(this).style('stroke-width', d3.select(this).style('stroke-width') * 2);
             set_hover_line(d.time);
-            console.log(d.time);
+            //console.log(d.time);
         })
         .on('mouseout', function(d){
           if (document.getElementById('widthSwitch').checked == true){
@@ -325,8 +331,14 @@ var yAttr = 'noise';
         })
 
       if (document.getElementById('widthSwitch').checked == true){
-        console.log('width switch')
-        path.style('stroke-width', function(d){return d[yAttr];});
+        //console.log('width switch')
+        if (document.getElementById('colorSwitch').checked == true){
+          var widthScaler = widthScale(selectedData, yAttr);
+        }
+        else{
+          var widthScaler = widthScale(droneData, yAttr);
+        }
+        path.style('stroke-width', function(d){return widthScaler(d[yAttr]);});
         //path.attr('stroke-width',  function(d){return d[yAttr];});
       }
         
