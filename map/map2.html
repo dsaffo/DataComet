@@ -51,6 +51,21 @@
     stroke: red;
     stroke-width: var(--element-width);
   }
+    
+  div.tooltip {	
+    position: absolute;			
+    text-align: center;			
+    width: 70px;					
+    height: 32px;					
+    padding: 2px;				
+    font: 12px sans-serif;		
+    background: white;	
+    border: 0px;		
+    border-radius: 8px;			
+    pointer-events: none;
+    
+    z-index: 2;
+  }
 
 </style>
 </head>
@@ -59,7 +74,7 @@
 <body>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-
+  
   <div id="map-canvas" style="position: relative; z-index: 1">
      <div class="row">
     <div class="switch" style="position: relative; z-index: 2; float: right; margin-top: 10px; margin-right: 25px">
@@ -90,6 +105,7 @@
         Local
       </label>
     </div>
+    <div class="tooltip"></div>
     </div>
 
   </div>
@@ -249,7 +265,8 @@ var window2 = [];
 var radioValue = 1;
 var yAttr = 'noise_per_ms';
 
-
+ var div = d3.select(".tooltip")				
+        .style("opacity", 0);
 
 
 
@@ -363,6 +380,8 @@ var yAttr = 'noise_per_ms';
       else{
         colorScale = selectColorScale(droneData,yAttr,cmap)
       }
+      
+     
 
       var path = sel.selectAll('path')
         .data(selectedData)
@@ -372,13 +391,22 @@ var yAttr = 'noise_per_ms';
         .attr('class', 'drone')
         .attr('d', function(d){ return line([d.startlatLng,d.endlatLng])})
         .style('stroke-width', map.getZoom())
+        
         .on('mouseover', function(d){
             d3.select(this).style("cursor", "pointer");
             d3.select(this).style('stroke-width', d3.select(this).style('stroke-width') * 2);
             set_hover_line(d.time);
-            //console.log(d.time);
+            div.transition()		
+                .duration(200)		
+                .style("opacity", .9);		
+            div.html("Time: " + d.time + "s<br/> Value: "  + d[yAttr])	
+                .style("left", (d3.event.pageX) + "px")		
+                .style("top", (d3.event.pageY - 28) + "px");	
         })
         .on('mouseout', function(d){
+          div.transition()		
+                .duration(500)		
+                .style("opacity", 0);	
           if (document.getElementById('widthSwitch').checked == true){
 
             d3.select(this).style('stroke-width', function(d){ return d[yAttr]});
