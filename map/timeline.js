@@ -558,33 +558,33 @@ function set_hover_line_out(x_time) {
 function tab_clicked(id) {
     console.log(filename);
     clear_all_svg();
-    timeline_color = 'red';
+    timeline_color = '#e41a1c';
     if (id == 'tab1') {
         create_graphs(filename, "time", "noise_per_ms", "jamming_indicator", "rssi");
     }
     else if (id == 'tab2') {
-        create_graphs(filename, "time", "alt", "vel_m_s", "satellites_used");    
+        create_graphs(filename, "time", "alt", "vel_m_s", "voltage_filtered_v");    
     }
     else if (id == 'tab3') {
-        create_graphs(filename, "time", "load", "ram_usage", "voltage_filtered_v");
+        create_graphs(filename, "time", "load", "ram_usage", "remaining");
     }
     else if (id == 'tab4') {
-        create_graphs(filename, "time", "baro_temp_celcius", "baro_pressure_pa", "remaining");
+        create_graphs(filename, "time", "baro_temp_celcius", "baro_pressure_pa", "satellites_used");
     }
 }
 
 // Creates the timeline as well as 3 line graphs which are all brush-zoom linked
 function create_graphs(filename, x_attr, y_attr1, y_attr2, y_attr3) {
-    create_line_chart("#line0",filename, x_attr, y_attr1, "red");
-    create_line_chart("#line1",filename, x_attr, y_attr2, "blue");
-    create_line_chart("#line2",filename, x_attr, y_attr3, "green");
+    create_line_chart("#line0",filename, x_attr, y_attr1, "#e41a1c");
+    create_line_chart("#line1",filename, x_attr, y_attr2, "#377eb8");
+    create_line_chart("#line2",filename, x_attr, y_attr3, "#4daf4a");
     create_timeline(filename, x_attr, y_attr1, line_array, xAxis_array, x_array);
 }
 
 // Removes timeline SVG and redraws timeline using a new y-attr and appropriate color
 function update_timeline(y_attr, value) {
     $('#timeline').empty();
-    colors = ['red', 'blue', 'green'];
+    colors = ['red', '#377eb8', '#4daf4a'];
     timeline_color = colors[value-1];
     create_timeline(filename, "time", y_attr, line_array, xAxis_array, x_array);
 }
@@ -595,9 +595,9 @@ function timeline_get_attribute(tab, value) {
     console.log(value);
     var attr = "";
     var security_attrs = ["noise_per_ms", "jamming_indicator", "rssi"];
-    var physical_attrs = ["alt", "vel_m_s", "satellites_used"];
-    var system_attrs = ["load", "ram_usage", "voltage_filtered_v"];
-    var env_attrs = ["baro_temp_celcius", "baro_pressure_pa", "remaining"];
+    var physical_attrs = ["alt", "vel_m_s", "voltage_filtered_v"];
+    var system_attrs = ["load", "ram_usage", "remaining"];
+    var env_attrs = ["baro_temp_celcius", "baro_pressure_pa", "satellites_used"];
     if (tab == "tab1") {
         attr = security_attrs[value-1];
     }
@@ -633,7 +633,7 @@ var x_array = [0,0,0];
 var window_dimensions = [0, 0];
 
 // Global color of the timeline (initially red but changes depending on radio value)
-var timeline_color = 'red';
+var timeline_color = '#e41a1c';
 var hovered_line = 0;
 
 // Dictionarry to nicely label y-axes given an y attribute
@@ -641,7 +641,7 @@ var y_label_to_y_attr = {
     "noise_per_ms": "Noise (m/s)",
     "jamming_indicator": "Jamming",
     "rssi": "Signal Strength (RSSI)",
-    "alt": "Altitude (mm)",
+    "alt": "Altitude (m)",
     "vel_m_s": "Velocity (m/s)",
     "satellites_used": "Satellites Used",
     "load": "CPU Load",
@@ -651,4 +651,3 @@ var y_label_to_y_attr = {
     "baro_pressure_pa": "Pressure (Pa)",
     "remaining": "Battery remaining (%)"
   };
-//update_file_timeline(filename)
