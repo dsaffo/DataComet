@@ -547,6 +547,13 @@ function set_hover_line(x_time) {
     }
 }
 
+function set_hover_line_out(x_time) {
+    for (var i = 0; i < 3; i++) {
+        d3.select("#line"+i+" .mouse-line")
+            .style("opacity", "0")
+    }
+}
+
 // Creates line-charts when a tab is get clicked
 function tab_clicked(id) {
     console.log(filename);
