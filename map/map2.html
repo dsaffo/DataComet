@@ -90,7 +90,7 @@
       </label>
     </div>
     </div>
-      
+
   </div>
 
 
@@ -162,6 +162,7 @@
           <option value="crash.csv">crash</option>
           <option value="epsilon.csv">crash epsilon</option>
           <option value="new.csv">long</option>
+          <option value="northeastern.csv">northeastern</option>
           <!--<option value="huge.csv">huge</option>-->
           <!--<option value="straight.csv">straight</option>-->
         </select>
@@ -310,7 +311,7 @@ var yAttr = 'noise_per_ms';
       var line = d3.line()
         .x(function(d){ return proj.latLngToLayerPoint(d).x; })
         .y(function(d){ return proj.latLngToLayerPoint(d).y; })
-      
+
        var smoothLine = d3.line()
         .x(function(d){ return proj.latLngToLayerPoint(d.startlatLng).x; })
         .y(function(d){ return proj.latLngToLayerPoint(d.startlatLng).y; })
@@ -492,7 +493,7 @@ document.getElementById('logSelect').addEventListener('change', function(){
   update_file_timeline(document.getElementById('logSelect').value);
   document.getElementById("colorSwitch").checked = false;
   document.getElementById("widthSwitch").checked = false;
-  
+
 });
 
 
