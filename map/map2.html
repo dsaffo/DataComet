@@ -272,6 +272,7 @@ var yAttr = 'noise_per_ms';
     var pathOverlay = L.d3SvgOverlay(function(sel,proj){
      
       d3.selectAll('.drone').remove();
+      d3.selectAll('.fullPath').remove();
       d3.selectAll('circle').remove();
       
       selectedData = [];
@@ -286,8 +287,23 @@ var yAttr = 'noise_per_ms';
       var line = d3.line()
         .x(function(d){ return proj.latLngToLayerPoint(d).x; })
         .y(function(d){ return proj.latLngToLayerPoint(d).y; })
+      
+       var smoothLine = d3.line()
+        .x(function(d){ return proj.latLngToLayerPoint(d.startlatLng).x; })
+        .y(function(d){ return proj.latLngToLayerPoint(d.startlatLng).y; })
+        .curve(d3.curveCatmullRom.alpha(0));
 
     
+      var fullPath = sel.selectAll('path')
+                        .data([droneData])
+                        .enter().append('path')
+                        .attr('class', 'fullPath')
+                        .attr('stroke', 'white')
+                        .attr('fill', 'none')
+                        .style('stroke-width', 5)
+                        .style('opacity', 0.5)
+                        .style("stroke-dasharray", "10,20")
+                        .attr('d', smoothLine);
       
       //timeWindow = window;
       window2 = window; 
