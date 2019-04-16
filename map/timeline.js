@@ -371,7 +371,12 @@ function create_line_chart(divId, filename, x_attr, y_attr, line_color) {
             if (error) throw error;
             console.log(filename);
             x.domain(d3.extent(data, function(d) { return d[x_attr]; }));
-            y.domain([d3.min(data, function (d) { return d[y_attr]; }), d3.max(data, function (d) { return d[y_attr]; })]);
+            if (y_attr == "load" || y_attr == "ram_usage" || y_attr == "remaining") {
+                y.domain([0,1]);
+            }
+            else {
+                y.domain([d3.min(data, function (d) { return d[y_attr]; }), d3.max(data, function (d) { return d[y_attr]; })]);
+            }
             xAxisLine = x;
             focus.append("g")
                 .attr("class", "axis axis--x")
