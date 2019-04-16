@@ -556,13 +556,13 @@ function tab_clicked(id) {
         create_graphs(filename, "time", "noise_per_ms", "jamming_indicator", "rssi");
     }
     else if (id == 'tab2') {
-        create_graphs(filename, "time", "alt", "vel_m_s", "satellites_used");    
+        create_graphs(filename, "time", "alt", "vel_m_s", "voltage_filtered_v");    
     }
     else if (id == 'tab3') {
-        create_graphs(filename, "time", "load", "ram_usage", "voltage_filtered_v");
+        create_graphs(filename, "time", "load", "ram_usage", "remaining");
     }
     else if (id == 'tab4') {
-        create_graphs(filename, "time", "baro_temp_celcius", "baro_pressure_pa", "remaining");
+        create_graphs(filename, "time", "baro_temp_celcius", "baro_pressure_pa", "satellites_used");
     }
 }
 
@@ -588,9 +588,9 @@ function timeline_get_attribute(tab, value) {
     console.log(value);
     var attr = "";
     var security_attrs = ["noise_per_ms", "jamming_indicator", "rssi"];
-    var physical_attrs = ["alt", "vel_m_s", "satellites_used"];
-    var system_attrs = ["load", "ram_usage", "voltage_filtered_v"];
-    var env_attrs = ["baro_temp_celcius", "baro_pressure_pa", "remaining"];
+    var physical_attrs = ["alt", "vel_m_s", "voltage_filtered_v"];
+    var system_attrs = ["load", "ram_usage", "remaining"];
+    var env_attrs = ["baro_temp_celcius", "baro_pressure_pa", "satellites_used"];
     if (tab == "tab1") {
         attr = security_attrs[value-1];
     }
@@ -634,7 +634,7 @@ var y_label_to_y_attr = {
     "noise_per_ms": "Noise (m/s)",
     "jamming_indicator": "Jamming",
     "rssi": "Signal Strength (RSSI)",
-    "alt": "Altitude (mm)",
+    "alt": "Altitude (m)",
     "vel_m_s": "Velocity (m/s)",
     "satellites_used": "Satellites Used",
     "load": "CPU Load",
@@ -644,4 +644,3 @@ var y_label_to_y_attr = {
     "baro_pressure_pa": "Pressure (Pa)",
     "remaining": "Battery remaining (%)"
   };
-//update_file_timeline(filename)
