@@ -316,6 +316,13 @@ var yAttr = 'noise_per_ms';
   function widthScale(data, value){
     max = d3.max(data, function(d){ return parseFloat(d[value]); });
     min = d3.min(data, function(d){ return parseFloat(d[value]); });
+    
+     
+    if (value == 'cpu_load' || value == 'ram_usage' || value == 'remaining'){
+      max = 1;
+      min = 0;
+    }
+    
     return widthScaler = d3.scaleLinear().domain([min, max]).range([1,40]);
   }
 
