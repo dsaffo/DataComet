@@ -60,8 +60,18 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 
   <div id="map-canvas" style="position: relative; z-index: 1">
+     <div class="row">
+    <div class="switch" style="position: relative; z-index: 2; float: right; margin-top: 10px; margin-right: 25px">
+      <label style="color: white; font-size: 15px">
+        Ghost: Off
+      <input id='ghostSwitch' type="checkbox">
+      <span class="lever"></span>
+        On
+      </label>
+    </div>
+    </div>
     <div class="row">
-    <div class="switch" style="position: relative; z-index: 2; float: right; margin-top: 10px; margin-right: 26px">
+    <div class="switch" style="position: relative; z-index: 2; float: right; margin-right: 26px">
       <label style="color: white; font-size: 15px">
         Width: Off
       <input id='widthSwitch' type="checkbox">
@@ -80,6 +90,7 @@
       </label>
     </div>
     </div>
+
   </div>
 
 
@@ -151,8 +162,9 @@
           <option value="crash.csv">crash</option>
           <option value="epsilon.csv">crash epsilon</option>
           <option value="new.csv">long</option>
-          <option value="huge.csv">huge</option>
-          <option value="straight.csv">straight</option>
+          <option value="northeastern.csv">northeastern</option>
+          <!--<option value="huge.csv">huge</option>-->
+          <!--<option value="straight.csv">straight</option>-->
         </select>
         <label>Select Log</label>
       </div>
@@ -284,6 +296,7 @@ var yAttr = 'noise_per_ms';
     var pathOverlay = L.d3SvgOverlay(function(sel,proj){
 
       d3.selectAll('.drone').remove();
+      d3.selectAll('.fullPath').remove();
       d3.selectAll('circle').remove();
 
       selectedData = [];
@@ -299,7 +312,23 @@ var yAttr = 'noise_per_ms';
         .x(function(d){ return proj.latLngToLayerPoint(d).x; })
         .y(function(d){ return proj.latLngToLayerPoint(d).y; })
 
+       var smoothLine = d3.line()
+        .x(function(d){ return proj.latLngToLayerPoint(d.startlatLng).x; })
+        .y(function(d){ return proj.latLngToLayerPoint(d.startlatLng).y; })
+        .curve(d3.curveCatmullRom.alpha(0));
 
+      if (document.getElementById('ghostSwitch').checked == true){
+        var fullPath = sel.selectAll('path')
+                          .data([droneData])
+                          .enter().append('path')
+                          .attr('class', 'fullPath')
+                          .attr('stroke', 'white')
+                          .attr('fill', 'none')
+                          .style('stroke-width', 5)
+                          .style('opacity', 0.5)
+                          .style("stroke-dasharray", "10,20")
+                          .attr('d', smoothLine);
+      }
 
       //timeWindow = window;
       window2 = window;
@@ -399,6 +428,9 @@ document.getElementById("widthSwitch").addEventListener("change", function(){
 document.getElementById("colorSwitch").addEventListener("change", function(){
   drawMap(window2);
 });
+document.getElementById("ghostSwitch").addEventListener("change", function(){
+  drawMap(window2);
+});
 
 // Initializing Materialize objects
 $(document).ready(function(){
@@ -473,6 +505,7 @@ document.getElementById('logSelect').addEventListener('change', function(){
   update_file_timeline(document.getElementById('logSelect').value);
   document.getElementById("colorSwitch").checked = false;
   document.getElementById("widthSwitch").checked = false;
+
 });
 
 
