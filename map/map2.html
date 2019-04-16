@@ -55,7 +55,7 @@
   div.tooltip {	
     position: absolute;			
     text-align: center;			
-    width: 70px;					
+    width: auto;					
     height: 32px;					
     padding: 2px;				
     font: 12px sans-serif;		
@@ -300,6 +300,12 @@ var yAttr = 'noise_per_ms';
 
     max = d3.max(data, function(d){ return parseFloat(d[value]); });
     min = d3.min(data, function(d){ return parseFloat(d[value]); });
+    
+    if (value == 'cpu_load' || value == 'ram_usage' || value == 'remaining'){
+      max = 1;
+      min = 0;
+    }
+    
     //console.log(min,max)
     var colorScale = d3.scaleSequential(d3["interpolate" + cmap])
         .domain([min, max]);
