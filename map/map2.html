@@ -133,8 +133,8 @@
     <!-- Create Tabs -->
     <div class="row" id="tabs_div">
       <div class="col s12">
-        <ul class="tabs">
-          <li class="tab col s3" id='tab1'><a class="active" href="#1" style="font-size: 16px">Signal</a></li>
+        <ul class="tabs" id='tabs_id'>
+          <li class="tab col s3" id='tab1'><a class="active" href="#1" style="font-size: 16px" id='tab1_href'>Signal</a></li>
           <li class="tab col s3" id='tab2'><a href="#2" style="font-size: 16px">Physical</a></li>
           <li class="tab col s3" id='tab3'><a href="#3" style="font-size: 16px">System</a></li>
           <li class="tab col s3" id='tab4'><a href="#4" style="font-size: 16px">Misc.</a></li>
@@ -418,6 +418,7 @@ $(document).ready(function(){
 
 $(".tab").click(function() {
   id = this.id
+  console.log("tab clicked");
 
   $("#radio1_input").prop("checked", true);
   radioValue = 1;
@@ -453,6 +454,17 @@ $("input[name='group1']").change(function(){
 
 
 function loadData(file){
+  // $('.tabs a[href="#1"]').trigger('click');
+  // var instance = M.Tabs.getInstance(document.getElementsByClassName('.tabs'));
+  // instance.updateTabIndicator();
+  // $('ul.tabs').tabs();
+  // $('ul.tabs').tabs('select', '1');
+  $('ul.tabs').tabs();
+  var el = document.getElementById("tabs_id");
+  var instance = M.Tabs.getInstance(el);
+  instance.select('1');
+
+  
   d3.csv(file, function(data){ draw(data);});
 }
 
