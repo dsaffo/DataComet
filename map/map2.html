@@ -168,6 +168,13 @@
         </select>
         <label>Select Log</label>
       </div>
+      <div>
+      <div id='metaData'></div>
+      
+      
+    </div>
+    <div class="row">
+      
     </div>
 
 
@@ -369,6 +376,7 @@ var yAttr = 'noise_per_ms';
           else{
             d3.select(this).style('stroke-width', map.getZoom());
           }
+          set_hover_line_out();
         })
 
       if (document.getElementById('widthSwitch').checked == true){
@@ -493,7 +501,7 @@ document.getElementById('logSelect').addEventListener('change', function(){
   update_file_timeline(document.getElementById('logSelect').value);
   document.getElementById("colorSwitch").checked = false;
   document.getElementById("widthSwitch").checked = false;
-
+  setMetaDataInfo(document.getElementById('logSelect').value);
 });
 
 
@@ -513,9 +521,24 @@ function linkHoverOut(xAttr){
   }
 }
 
+function setMetaDataInfo(file){
+  d3.csv('metadata.csv', function(data){
+    function filterCriteria(d) {
+      return d.dataset === file;
+    }
+    
+    var newData = data.filter(filterCriteria);
+    var airframe = newData[0].Airframe;
+    var time = newData[0].LoggingDuration;
+    var date = newData[0].Date;
+    var dist = newData[0].Distance;
+    
+    document.getElementById("metaData").innerHTML = "Airframe: " + airframe + " Date: " + date + " Duration: " + time + " Distance: " + dist;
+  });
+}
 loadData(document.getElementById('logSelect').value);
 update_file_timeline(document.getElementById('logSelect').value);
-
+setMetaDataInfo(document.getElementById('logSelect').value);
 
 </script>
 
