@@ -1,0 +1,48 @@
+html { height: 100% }
+body { height: 100%; margin: 0; padding: 0 }
+#map-canvas { height: 90%; width: 70%; float:left;}
+#timeline_div {height: 10%; width: 70%; bottom: 10px; position: absolute; margin-top: 20px;}
+#right_bar_div {height:100%; width:30%; float:right}
+#graphs_div {height: 80%; width: 100%;}
+#line1_div {width: 95%; height:33.3%; top: 0; right: 0; float: right}
+#line2_div {width: 95%; height:33.3%; top:30% ; right: 0; float:right}
+#line3_div {width: 95%; height:33.3%; top:60% ; right: 0; float:right;}
+#radio_div {width: 5%; height:100%; float:left}
+#radio1 {height:33.3%; bottom:0%}
+#radio2 {height:33.3%; bottom:0%}
+#radio3 {height:33.3%; bottom:0%}
+#tabs_div {height: 2%; width: 100%;}
+#select_div {height: 2%; width: 100%;}
+#metaData {width: 80%; float: left; }
+#modal_div {height:5%; width: 15%; float:right;}
+/* #graphs_div {height: 80%; width: 30%; float:right;}
+#line1_div {width: 95%; height:33.3%; top: 0; right: 0; float: right}
+#line2_div {width: 95%; height:33.3%; top:30% ; right: 0; float:right}
+#line3_div {width: 95%; height:33.3%; top:60% ; right: 0; float:right;}
+#radio_div {width: 5%; height:100%; float:left}
+#radio1 {height:33.3%; bottom:0%}
+#radio2 {height:33.3%; bottom:0%}
+#radio3 {height:33.3%; bottom:0%}
+#tabs_div {height: 3%; width: 30%; float:right; margin-bottom: 0px;}
+#select_div {height: 3%; width: 30%; float:right; margin-top: 30px;} */
+
+.dronePathStyle{
+fill: none;
+stroke: red;
+stroke-width: var(--element-width);
+}
+
+div.tooltip {	
+position: absolute;			
+text-align: center;			
+width: auto;					
+height: 32px;					
+padding: 2px;				
+font: 12px sans-serif;		
+background: white;	
+border: 0px;		
+border-radius: 8px;			
+pointer-events: none;
+
+z-index: 2;
+}
