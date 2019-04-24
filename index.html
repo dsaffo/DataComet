@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Data Comets</title>
+
+  <link href='https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.css' rel='stylesheet' type='text/css'/>
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" type="text/css" href="css/timeline.css">
+
+  <!-- Materialize CSS -->
+  <!-- Compiled and minified CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  
+  <script src="https://d3js.org/d3-path.v1.min.js"></script>
+  <!-- Jquery -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  
+  <script src="js/timeline.js"></script>
+
+
+<script src="https://d3js.org/d3-path.v1.min.js"></script>
+<script src="https://d3js.org/d3-color.v1.min.js"></script>
+<script src="https://d3js.org/d3-interpolate.v1.min.js"></script>
+<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+
+  <script src="js/line-charts.js"></script> 
+
+<!-- </div> -->
+
+
+
+
+
+  <style type="text/css">
+    html { height: 100% }
+    body { height: 100%; margin: 0; padding: 0 }
+    #map-canvas { height: 90%; width: 70%; float:left;}
+    #timeline_div {height: 10%; width: 70%; bottom: 10px; position: absolute; margin-top: 20px;}
+    #right_bar_div {height:100%; width:30%; float:right}
+    #graphs_div {height: 80%; width: 100%;}
+    #line1_div {width: 95%; height:33.3%; top: 0; right: 0; float: right}
+    #line2_div {width: 95%; height:33.3%; top:30% ; right: 0; float:right}
+    #line3_div {width: 95%; height:33.3%; top:60% ; right: 0; float:right;}
+    #radio_div {width: 5%; height:100%; float:left}
+    #radio1 {height:33.3%; bottom:0%}
+    #radio2 {height:33.3%; bottom:0%}
+    #radio3 {height:33.3%; bottom:0%}
+    #tabs_div {height: 2%; width: 100%;}
+    #select_div {height: 2%; width: 100%;}
+    #metaData {width: 80%; float: left; }
+    #modal_div {height:5%; width: 15%; float:right;}
+    /* #graphs_div {height: 80%; width: 30%; float:right;}
+    #line1_div {width: 95%; height:33.3%; top: 0; right: 0; float: right}
+    #line2_div {width: 95%; height:33.3%; top:30% ; right: 0; float:right}
+    #line3_div {width: 95%; height:33.3%; top:60% ; right: 0; float:right;}
+    #radio_div {width: 5%; height:100%; float:left}
+    #radio1 {height:33.3%; bottom:0%}
+    #radio2 {height:33.3%; bottom:0%}
+    #radio3 {height:33.3%; bottom:0%}
+    #tabs_div {height: 3%; width: 30%; float:right; margin-bottom: 0px;}
+    #select_div {height: 3%; width: 30%; float:right; margin-top: 30px;} */
+
+  .dronePathStyle{
+    fill: none;
+    stroke: red;
+    stroke-width: var(--element-width);
+  }
+    
+  div.tooltip {	
+    position: absolute;			
+    text-align: center;			
+    width: auto;					
+    height: 32px;					
+    padding: 2px;				
+    font: 12px sans-serif;		
+    background: white;	
+    border: 0px;		
+    border-radius: 8px;			
+    pointer-events: none;
+    
+    z-index: 2;
+  }
+
+</style>
+</head>
+
+<body>
+<body>
+
+
+  
+  <div id="map-canvas" style="position: relative; z-index: 1">
+     <div class="row">
+    <div class="switch" style="position: relative; z-index: 2; float: right; margin-top: 10px; margin-right: 25px">
+      <label style="color: white; font-size: 15px">
+        Ghost: Off
+      <input id='ghostSwitch' type="checkbox">
+      <span class="lever"></span>
+        On
+      </label>
+    </div>
+    </div>
+    <div class="row">
+    <div class="switch" style="position: relative; z-index: 2; float: right; margin-right: 26px">
+      <label style="color: white; font-size: 15px">
+        Width: Off
+      <input id='widthSwitch' type="checkbox">
+      <span class="lever"></span>
+        On
+      </label>
+    </div>
+    </div>
+     <div class="row">
+    <div class="switch" style="position: relative; z-index: 2; float: right; margin-right: 10px">
+      <label style="color: white; font-size: 15px">
+        Scale: Global
+      <input id='colorSwitch' type="checkbox">
+      <span class="lever"></span>
+        Local
+      </label>
+    </div>
+    <div class="tooltip"></div>
+    </div>
+
+  </div>
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js"></script>
+
+  <script src="https://d3js.org/d3.v4.min.js"></script>
+  <script src="js/L.D3SvgOverlay.js"></script>
+
+  <script src="https://d3js.org/d3-selection-multi.v0.4.min.js"></script>
+
+  <!-- Create Timeline and Line Graphs -->
+  <div id='timeline_div'>
+    <svg width="1360" height="150" id='timeline'></svg>
+  </div>
+
+  <div id='right_bar_div'>
+    <div id="graphs_div">
+      <div id="radio_div">
+          <form action="#" style="height: 100%;">
+            <p id='radio1'>
+              <label>
+                <input name="group1" type="radio" value="1" id="radio1_input" checked />
+                <span style="top: 30%; left: 20%"></span>
+              </label>
+            </p>
+            <p id='radio2'>
+              <label>
+                <input name="group1" type="radio" value="2" id="radio2_input"/>
+                <span style="top: 30%; left: 20%"></span>
+              </label>
+            </p>
+            <p id='radio3'>
+              <label>
+                <input name="group1" type="radio" value="3" id="radio3_input"/>
+                <span style="top: 30%; left: 20%"></span>
+              </label>
+            </p>
+          </form>
+        </div>
+      <div id='line1_div'>
+        <svg width="570" height="300" id='line0'></svg>
+      </div>
+      <div id="line2_div">
+        <svg width="570" height="300" id='line1'></svg>
+      </div>
+      <div id="line3_div">
+        <svg width="570" height="300" id='line2'></svg>
+      </div>
+    </div>
+
+    <!-- Create Tabs -->
+    <div class="row" id="tabs_div">
+      <div class="col s12">
+        <ul class="tabs" id='tabs_id'>
+          <li class="tab col s3" id='tab1'><a class="active" href="#1" style="font-size: 16px" id='tab1_href'>Signal</a></li>
+          <li class="tab col s3" id='tab2'><a href="#2" style="font-size: 16px">Physical</a></li>
+          <li class="tab col s3" id='tab3'><a href="#3" style="font-size: 16px">System</a></li>
+          <li class="tab col s3" id='tab4'><a href="#4" style="font-size: 16px">Misc.</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="row" id = "select_div">
+      <div class="input-field col s12">
+        <select id='logSelect'>
+          <option value="data/milestone3.csv">Simple Path</option>
+          <option value="data/milestone3_modified.csv">Simple Path (finer data)</option>
+          <option value="data/spaghetti.csv">Complex Overlapping Path</option>
+          <option value="data/crash.csv">Crash 1</option>
+          <option value="data/epsilon.csv">Crash 2</option>
+          <option value="data/new.csv">Long Flight Time (slow)</option>
+          <option value="data/northeastern.csv">Short Flight at Northeastern</option>
+          <!--<option value="data/huge.csv">huge</option>-->
+          <!--<option value="data/straight.csv">straight</option>-->
+        </select>
+        <label>Select Log</label>
+      </div>
+    </div>
+
+    <div id='metaData'></div>
+
+    <div id="modal_div">
+      <!-- Modal Trigger -->
+      <a class="waves-effect waves-light modal-trigger btn-floating btn-large red" href="#modal1">
+        <i class="medium material-icons" style="font-size: 2.8rem;">info_outline</i>
+      </a>
+
+      <!-- Modal Structure -->
+      <div id="modal1" class="modal">
+        <div class="modal-content">
+                  <h4>Data Comets</h4>
+          <p>Created By: David Saffo, Aristotelis Sigiouan Leventidis, Twinkle Jain, Berk Can Gurel</p>
+          <br>
+          <p><b>Demo Video: </b></p>
+          <iframe src="https://player.vimeo.com/video/331021317" width="640" height="360" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>
+          <p><b>Motivation</b>: 
+          <br>
+          Data Comets is an interactive tool for visualizing unmanned aerial vehicle (UAV) flight logs. UAVs can range from being sophisticated quadcopters made for capturing film and images, to a simple hobbyist remote control fixed wing plane. In either case data needs to be sent, received, and captured in order to for the UAV to operate as intended. Many sensors, and metrics are used to record this data in order to ensure that all UAV functions are working. In the event the UAV does not operate normally, it is important to be able to look at the flight log to identify not only what went wrong but when and where as well. Data Comets lets you visualize flight log data not only in time but also in space, as well as making it easy to analyze multivariate data together.  
+          </p>
+          <p><b>Data</b>:
+          <br>
+          Our data is coming from a public database of UAV flight logs <a href="https://logs.px4.io/browse">LINK</a>. The logs come from UAVs using the PX4 flight control software. You can search this database for certain features you would want, such has flight time, UAV model, or number of errors. You can also view each log and all of its respective sensor and location data with auto 
+          generated plots. This allows us to preview the data to determine if it is worth downloading. We can download the raw flight logs as UGL files. These files are encrypted but we can use a available python cli tool to convert the UGL files to csv files. The tool generates several csv files for each of the different sensor or location data in the flight log. We identify and merge the data that we are particularly interested in. This includes data for; location, battery, gps signal, jamming sensor, vibrations, and cpu/ram usage. Our data is a mix of ordinal and quantitative data. </p>
+                    <p><b>Task Analysis</b>:
+          <br>
+          1. View UAV path in time and space
+                      <br>
+          2. View temporal abnormalities
+                      <br>
+          3. View multivariate UAV data
+                      <br>
+          4. Filter data based on time
+                      <br>
+          5. Link multiple data source based on time
+          </p>
+                    <p><b>Design Process</b>:
+              <br>
+              We started our design by reviewing the data we had available to us and identifying the task we wanted our visualization to accomplish. After this was completed we were able to start sketching potential ideas on how to visualize the data to meet our tasks. Some common themes of our sketches were various methods of encoding data on a line that would represent our UAV path. For example coloring the line based on some data or changing the width or shape of the line as well. Our sketches also included some type of dashboard view where the other types of data could be shown along with the path of the flight on the map. We originally intended to allow users to hit play and watch the flight path animate from start to finish. However, after implementing a brushing window to filter the portion of the path disabled we decided that being able to brush across the timeline was better than just watching an animation progress. 
+          </p>
+                    <p><b>Final Visualization</b>:
+              <br>
+              Our visualization tool was created using <a href=”https://d3js.org/”>D3.js</a>,  <a href=”https://leafletjs.com/”>Leaflet.js</a>, and a helper plugin <a href=”https://github.com/teralytics/Leaflet.D3SvgOverlay”> Leaflet.D3SvgOverlay</a>. Our tool consists of three main views, the map, chart, and timeline views. The map view is the most prominent view of our tool and displays the path of the UAVs a series of lines. Each line represents one second of flight time. The map can be zoomed in and out to show different parts of the path. If the flight covers a large distance it is important to be able to zoom out enough to track those sections. At the same time if the UAV makes many smaller movements such as a hover, it is important to be able to zoom in enough to reveal those sections. After a certain zoom level the map will stop rendering and a grey background will be used, this is because the map will being to distort too much at higher zoom levels. The map view also contains three switches that enable other features. The first switch is “Ghost” this will show the full path as a dotted line no matter what data is selected. The next switch is “Width” this will encode the currently selected data as the width of the line as well as color. The last switch is “Scale” this will change the scale of the color and the width of the data based either on the full dataset “Global” or only the currently selected data “Local”. The next view is the chart view, this view contains three charts per tab and has four different tabs all with different data. You can select the radio buttons next to each chart to change which data is being encoded on the path for color and width. The last view is the timeline, in this view you can select the the portion of the data you want to be shown on the map and in the charts with the brushing window. You can slide the window across the timeline to animate the UAV flight path. In this view you can also see some metadata about the flight, as well as select from a list of other logs to view. 
+          </p>
+
+          <p><b>Data Analysis</b>:
+          <br>
+          Browsing through our select log option we visualized a variety of flights at different circumstances. The first option “Simple Path” visualizes a simple short flight where visualizing the full path is clear. The next option “Complex Overlapping Path” is a more complex flight with a lot of overlapping path segments. In this case we can use the brush interaction in the timeline to narrow the selected time window and slowly move it in order to visualize the flight path over time. Next for “Crash 1” and “Crash 2” options we visualized two flights where the UAV crashed. Hovering over near the end of the UAV’s path (right before the crash) we can see on the linked line charts on the right that for both “Crash 1” and “Crash 2” the measurements of Noise where very high and the signal strength (RSSI) were low. So we can hypothesize that those UAVs crashed because of bad signal. Finally the “Long Flight Time” option shows the visualization of a very long flight (about 1 hour). Here being able to limit the time window in the timeline is necessary in order to understand the UAV’s path over time.  
+          </p>
+
+          <p><b>Conclusion/Future Work</b>:
+          <br>
+          We have presented Data Comets, an interactive tool for visualizing unmanned aerial vehicle (UAV) flight logs. Data Comets displays the flight path together many other important metrics logged by a UAV. The tool is interactive allowing users to select a particular time window of interest and visualize the logged metrics in the selected window. The path is color encoded based on a user selected metric and can also be toggled to encode the selected metric by the width of the path.
+
+          There are many potential future directions for Data Comets. Firstly, Data Comets could be better optimized to allow a more responsive experience for long flights. Currently it is hard to visualize flights with more than 5 thousand data points. Adding the functionality of automatically importing your flight log into our tool and analyzing its data would also be very beneficial as this process is currently done manually by us in this current version. Finally allowing users to customize the layout and encodings used by our tool more extensively would give the users a better experience allowing them to work in a more familiar framework.
+          </p>
+
+
+        </div>
+        <!-- <div class="modal-footer">
+          <a href="#!" class="modal-close waves-effect waves-green btn-flat">Agree</a>
+        </div> -->
+      </div>
+    </div>
+  </div>
+
+
+
+
+<script>
+
+//the map
+var map = L.map("map-canvas",{center:[0,0],zoom:19,maxZoom:25,minZoom:1});
+
+
+//some data holders
+var droneData = [];
+var start = [];
+var window2 = [];
+// tabs and radio
+var radioValue = 1;
+var yAttr = 'noise_per_ms';
+
+ var div = d3.select(".tooltip")				
+        .style("opacity", 0);
+
+
+
+    //
+  function draw(data){
+
+      startlat = data[0].lat / 10000000;
+      startlon = data[0].lon / 10000000;
+      map.remove();
+      map = L.map("map-canvas",{center:[startlat,startlon],zoom:19,maxZoom:25,minZoom:1});
+      var Esri_WorldTopoMap = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        maxZoom: 20,
+        maxNativeZoom: 18
+      });
+      Esri_WorldTopoMap.addTo(map);
+
+
+      droneData = data.map(function(d){
+        endlat = d.lat/10000000
+        endlon =  d.lon/10000000
+        d.startlatLng = [+startlat,+startlon];
+        d.endlatLng = [+endlat,+endlon];
+        startlat = endlat
+        startlon = endlon
+        return d;
+      });
+  //console.log(droneData);
+  window2 = [0, droneData.length];
+  //console.log(window2);
+  function selectColorScale(data, value, cmap){
+
+    max = d3.max(data, function(d){ return parseFloat(d[value]); });
+    min = d3.min(data, function(d){ return parseFloat(d[value]); });
+    
+    if (value == 'cpu_load' || value == 'ram_usage' || value == 'remaining'){
+      max = 1;
+      min = 0;
+    }
+    
+    //console.log(min,max)
+    var colorScale = d3.scaleSequential(d3["interpolate" + cmap])
+        .domain([min, max]);
+
+    return colorScale;
+  }
+
+  function widthScale(data, value){
+    max = d3.max(data, function(d){ return parseFloat(d[value]); });
+    min = d3.min(data, function(d){ return parseFloat(d[value]); });
+    
+     
+    if (value == 'cpu_load' || value == 'ram_usage' || value == 'remaining'){
+      max = 1;
+      min = 0;
+    }
+    
+    return widthScaler = d3.scaleLinear().domain([min, max]).range([1,40]);
+  }
+
+  function drawMap(window){
+
+    var cmap = 'Reds'
+
+    if (radioValue == 1){
+      cmap = 'Reds'
+    }
+    else if (radioValue == 2){
+      cmap = 'Blues'
+    }
+    else{
+      cmap = 'Greens'
+    }
+
+    var pathOverlay = L.d3SvgOverlay(function(sel,proj){
+
+      d3.selectAll('.drone').remove();
+      d3.selectAll('.fullPath').remove();
+      d3.selectAll('circle').remove();
+
+      selectedData = [];
+
+      //color scale for battery
+      //var max = d3.max(droneData,function(d){return parseInt(d['jamming_indicator'])});
+      //var median = d3.median(droneData,function(d){return d.jamming_indicator});
+      //console.log('max',max);
+      //var colorScale = d3.scaleSequential(d3.interpolateReds).domain([0, max]);
+
+      //our line generator
+      var line = d3.line()
+        .x(function(d){ return proj.latLngToLayerPoint(d).x; })
+        .y(function(d){ return proj.latLngToLayerPoint(d).y; })
+
+       var smoothLine = d3.line()
+        .x(function(d){ return proj.latLngToLayerPoint(d.startlatLng).x; })
+        .y(function(d){ return proj.latLngToLayerPoint(d.startlatLng).y; })
+        .curve(d3.curveCatmullRom.alpha(0));
+
+      if (document.getElementById('ghostSwitch').checked == true){
+        var fullPath = sel.selectAll('path')
+                          .data([droneData])
+                          .enter().append('path')
+                          .attr('class', 'fullPath')
+                          .attr('stroke', 'white')
+                          .attr('fill', 'none')
+                          .style('stroke-width', 5)
+                          .style('opacity', 0.5)
+                          .style("stroke-dasharray", "10,20")
+                          .attr('d', smoothLine);
+      }
+
+      //timeWindow = window;
+      window2 = window;
+
+      //for(i = timeWindow[0]; i < timeWindow[1]; i++){
+      //  selectedData.push(droneData[i])
+      //}
+
+      selectedData = droneData.slice(window[0],window[1] + 1);
+
+      if (document.getElementById('colorSwitch').checked == true){
+        colorScale = selectColorScale(selectedData,yAttr,cmap)
+      }
+
+      else{
+        colorScale = selectColorScale(droneData,yAttr,cmap)
+      }
+      
+     
+
+      var path = sel.selectAll('path')
+        .data(selectedData)
+        .enter().append('path')
+        .attr('id', function(d){ return 'time:' + d.time; })
+        .attr('stroke', function(d) { return colorScale(parseFloat(d[yAttr])) })
+        .attr('class', 'drone')
+        .attr('d', function(d){ return line([d.startlatLng,d.endlatLng])})
+        .style('stroke-width', map.getZoom())
+        
+        .on('mouseover', function(d){
+            d3.select(this).style("cursor", "pointer");
+            d3.select(this).style('stroke-width', d3.select(this).style('stroke-width') * 2);
+            set_hover_line(d.time);
+            div.transition()		
+                .duration(200)		
+                .style("opacity", .9);		
+            div.html("Time: " + d.time + "s<br/> Value: "  + d[yAttr])	
+                .style("left", (d3.event.pageX) + "px")		
+                .style("top", (d3.event.pageY - 28) + "px");	
+        })
+        .on('mouseout', function(d){
+          div.transition()		
+                .duration(500)		
+                .style("opacity", 0);	
+          if (document.getElementById('widthSwitch').checked == true){
+
+            d3.select(this).style('stroke-width', function(d){ return d[yAttr]});
+          }
+          else{
+            d3.select(this).style('stroke-width', map.getZoom());
+          }
+          set_hover_line_out();
+        })
+
+      if (document.getElementById('widthSwitch').checked == true){
+        //console.log('width switch')
+        if (document.getElementById('colorSwitch').checked == true){
+          var widthScaler = widthScale(selectedData, yAttr);
+        }
+        else{
+          var widthScaler = widthScale(droneData, yAttr);
+        }
+        path.style('stroke-width', function(d){return widthScaler(d[yAttr]);});
+        //path.attr('stroke-width',  function(d){return d[yAttr];});
+      }
+
+
+
+      var circle = sel.append("circle")
+                      .attr("cx", function(d){return proj.latLngToLayerPoint(selectedData[selectedData.length - 1].endlatLng).x;})
+                      .attr("cy", function(d){return proj.latLngToLayerPoint(selectedData[selectedData.length - 1].endlatLng).y;})
+                      .attr("r", map.getZoom()/1.5)
+                      .attr('fill',function(d){return colorScale(selectedData[selectedData.length - 1][yAttr])});
+
+
+
+
+
+      //console.log('zoom', map.getZoom());
+      //console.log('scale', proj.scale);
+
+
+
+    }, options = {zoomDraw:false});
+
+   pathOverlay.addTo(map);
+  }
+
+
+//draw the path for the first time
+drawMap([0,droneData.length]);
+
+
+map.on('zoomend', function() {
+  drawMap(window2);
+});
+
+window.addEventListener('timeline_update', function (e) {
+  //if(colorSwitch == true){
+  //  colorSwitch = false;
+  //  document.getElementById("colorSwitch").checked = false;
+  //}
+  drawMap(e.detail);
+});
+
+document.getElementById("widthSwitch").addEventListener("change", function(){
+  drawMap(window2);
+});
+document.getElementById("colorSwitch").addEventListener("change", function(){
+  drawMap(window2);
+});
+document.getElementById("ghostSwitch").addEventListener("change", function(){
+  drawMap(window2);
+});
+
+// Initializing Materialize objects
+$(document).ready(function(){
+    $('.tabs').tabs();
+});
+ $(document).ready(function(){
+    $('select').formSelect();
+  });
+
+$(document).ready(function(){
+  $('.modal').modal();
+});
+
+$(document).ready(function(){
+  $('.fixed-action-btn').floatingActionButton();
+});
+
+$(".tab").click(function() {
+  id = this.id
+  console.log("tab clicked");
+
+  $("#radio1_input").prop("checked", true);
+  radioValue = 1;
+  yAttr = timeline_get_attribute(id, radioValue);
+  if (id == 'tab1') {
+    //console.log("Clicked", id);
+    tab_clicked(id);
+  }
+  else if (id == 'tab2') {
+    //console.log("Clicked", id);
+    tab_clicked(id);
+  }
+  else if (id == 'tab3') {
+    //console.log("Clicked", id);
+    tab_clicked(id);
+  }
+  else if (id == 'tab4') {
+    //console.log("Clicked", id);
+    tab_clicked(id);
+  }
+  drawMap(window2);
+})
+
+// Need to listeners for radio change (one when user clicks and one when the tab is changed)!!
+$("input[name='group1']").change(function(){
+  var tab = $(".active").parent().attr('id');
+  radioValue = $(this).val();
+  yAttr = timeline_get_attribute(tab, radioValue);
+  //console.log(new_attr, radio_value);
+  drawMap(window2);
+});
+}
+
+
+function loadData(file){
+  // $('.tabs a[href="#1"]').trigger('click');
+  // var instance = M.Tabs.getInstance(document.getElementsByClassName('.tabs'));
+  // instance.updateTabIndicator();
+  // $('ul.tabs').tabs();
+  // $('ul.tabs').tabs('select', '1');
+  $('ul.tabs').tabs();
+  var el = document.getElementById("tabs_id");
+  var instance = M.Tabs.getInstance(el);
+  instance.select('1');
+
+  
+  d3.csv(file, function(data){ draw(data);});
+}
+
+document.getElementById('logSelect').addEventListener('change', function(){
+  loadData(document.getElementById('logSelect').value);
+  update_file_timeline(document.getElementById('logSelect').value);
+  document.getElementById("colorSwitch").checked = false;
+  document.getElementById("widthSwitch").checked = false;
+  setMetaDataInfo(document.getElementById('logSelect').value);
+});
+
+
+
+function linkHoverOn(xAttr){
+  d3.select('[id="time:'+xAttr+'"]')
+    .style('stroke-width', d3.select('[id="time:'+xAttr+'"]')
+                            .style('stroke-width') * 2);
+}
+
+function linkHoverOut(xAttr){
+  // Make sure the xAttr value is valid
+  if (xAttr >= 0) {
+    d3.select('[id="time:'+xAttr+'"]')
+    .style('stroke-width', d3.select('[id="time:'+xAttr+'"]')
+                            .style('stroke-width') / 2);
+  }
+}
+
+function setMetaDataInfo(file){
+  d3.csv('data/metadata.csv', function(data){
+    function filterCriteria(d) {
+      fileName = d.dataset === file;
+      return "data/" + fileName;
+    }
+    var newData = data.filter(filterCriteria);
+    var airframe = newData[0].Airframe;
+    var time = newData[0].LoggingDuration;
+    var date = newData[0].Date;
+    var dist = newData[0].Distance;
+    
+    document.getElementById("metaData").innerHTML = "Airframe: " + airframe + " Date: " + date + " Duration: " + time + " Distance: " + dist;
+  });
+}
+loadData(document.getElementById('logSelect').value);
+update_file_timeline(document.getElementById('logSelect').value);
+setMetaDataInfo(document.getElementById('logSelect').value);
+
+</script>
+
+
+</body>
+</html>

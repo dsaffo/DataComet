@@ -1,1 +1,0 @@
-https://logs.px4.io/plot_app?log=767574ea-fbe9-4eac-ac0d-d9b3e36323dc
