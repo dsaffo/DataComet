@@ -1,26 +1,27 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <title>Data Comets</title>
 
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
-  <meta charset="utf-8"/>
-  
+  <meta charset="utf-8" />
+
   <!-- leaflet -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js"></script>
-  <link href='https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.css' rel='stylesheet' type='text/css'/>
-  
+  <link href='https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.css' rel='stylesheet' type='text/css' />
+
 
 
   <!-- Jquery -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-  
+
   <!-- Materialize-->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  
-  
+
+
   <!-- D3 -->
   <script src="https://d3js.org/d3.v4.min.js"></script>
   <script src="https://d3js.org/d3-path.v1.min.js"></script>
@@ -28,60 +29,52 @@
   <script src="https://d3js.org/d3-interpolate.v1.min.js"></script>
   <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>\
   <script src="https://d3js.org/d3-selection-multi.v0.4.min.js"></script>
-  
+
   <!-- SvgOverlay -->
   <script src="js/L.D3SvgOverlay.js"></script>
-  
+
   <!-- CSS -->
   <link rel="stylesheet" type="text/css" href="css/timeline.css">
   <link rel="stylesheet" type="text/css" href="css/main.css">
-  
-  
 </head>
+
 <body>
 
 
-  
+
   <div id="map-canvas" style="position: relative; z-index: 1">
-     <div class="row">
-    <div class="switch" style="position: relative; z-index: 2; float: right; margin-top: 10px; margin-right: 25px">
-      <label style="color: white; font-size: 15px">
-        Ghost: Off
-      <input id='ghostSwitch' type="checkbox">
-      <span class="lever"></span>
-        On
-      </label>
-    </div>
+    <div class="row">
+      <div class="switch" style="position: relative; z-index: 2; float: right; margin-top: 10px; margin-right: 25px">
+        <label style="color: white; font-size: 15px">
+          Ghost: Off
+          <input id='ghostSwitch' type="checkbox">
+          <span class="lever"></span>
+          On
+        </label>
+      </div>
     </div>
     <div class="row">
-    <div class="switch" style="position: relative; z-index: 2; float: right; margin-right: 26px">
-      <label style="color: white; font-size: 15px">
-        Width: Off
-      <input id='widthSwitch' type="checkbox">
-      <span class="lever"></span>
-        On
-      </label>
+      <div class="switch" style="position: relative; z-index: 2; float: right; margin-right: 26px">
+        <label style="color: white; font-size: 15px">
+          Width: Off
+          <input id='widthSwitch' type="checkbox">
+          <span class="lever"></span>
+          On
+        </label>
+      </div>
     </div>
+    <div class="row">
+      <div class="switch" style="position: relative; z-index: 2; float: right; margin-right: 10px">
+        <label style="color: white; font-size: 15px">
+          Scale: Global
+          <input id='colorSwitch' type="checkbox">
+          <span class="lever"></span>
+          Local
+        </label>
+      </div>
+      <div class="tooltip"></div>
     </div>
-     <div class="row">
-    <div class="switch" style="position: relative; z-index: 2; float: right; margin-right: 10px">
-      <label style="color: white; font-size: 15px">
-        Scale: Global
-      <input id='colorSwitch' type="checkbox">
-      <span class="lever"></span>
-        Local
-      </label>
-    </div>
-    <div class="tooltip"></div>
-    </div>
-
   </div>
-
-
-
-
-  
-
 
   <!-- Create Timeline and Line Graphs -->
   <div id='timeline_div'>
@@ -91,27 +84,27 @@
   <div id='right_bar_div'>
     <div id="graphs_div">
       <div id="radio_div">
-          <form action="#" style="height: 100%;">
-            <p id='radio1'>
-              <label>
-                <input name="group1" type="radio" value="1" id="radio1_input" checked />
-                <span style="top: 30%; left: 20%"></span>
-              </label>
-            </p>
-            <p id='radio2'>
-              <label>
-                <input name="group1" type="radio" value="2" id="radio2_input"/>
-                <span style="top: 30%; left: 20%"></span>
-              </label>
-            </p>
-            <p id='radio3'>
-              <label>
-                <input name="group1" type="radio" value="3" id="radio3_input"/>
-                <span style="top: 30%; left: 20%"></span>
-              </label>
-            </p>
-          </form>
-        </div>
+        <form action="#" style="height: 100%;">
+          <p id='radio1'>
+            <label>
+              <input name="group1" type="radio" value="1" id="radio1_input" checked />
+              <span style="top: 30%; left: 20%"></span>
+            </label>
+          </p>
+          <p id='radio2'>
+            <label>
+              <input name="group1" type="radio" value="2" id="radio2_input" />
+              <span style="top: 30%; left: 20%"></span>
+            </label>
+          </p>
+          <p id='radio3'>
+            <label>
+              <input name="group1" type="radio" value="3" id="radio3_input" />
+              <span style="top: 30%; left: 20%"></span>
+            </label>
+          </p>
+        </form>
+      </div>
       <div id='line1_div'>
         <svg width="570" height="300" id='line0'></svg>
       </div>
@@ -135,7 +128,7 @@
       </div>
     </div>
 
-    <div class="row" id = "select_div">
+    <div class="row" id="select_div">
       <div class="input-field col s12">
         <select id='logSelect'>
           <option value="data/milestone3.csv">Simple Path</option>
@@ -163,50 +156,47 @@
       <!-- Modal Structure -->
       <div id="modal1" class="modal">
         <div class="modal-content">
-                  <h4>Data Comets</h4>
+          <h4>Data Comets</h4>
           <p>Created By: David Saffo, Aristotelis Sigiouan Leventidis, Twinkle Jain, Berk Can Gurel</p>
           <br>
           <p><b>Demo Video: </b></p>
           <iframe src="https://player.vimeo.com/video/331021317" width="640" height="360" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>
-          <p><b>Motivation</b>: 
-          <br>
-          Data Comets is an interactive tool for visualizing unmanned aerial vehicle (UAV) flight logs. UAVs can range from being sophisticated quadcopters made for capturing film and images, to a simple hobbyist remote control fixed wing plane. In either case data needs to be sent, received, and captured in order to for the UAV to operate as intended. Many sensors, and metrics are used to record this data in order to ensure that all UAV functions are working. In the event the UAV does not operate normally, it is important to be able to look at the flight log to identify not only what went wrong but when and where as well. Data Comets lets you visualize flight log data not only in time but also in space, as well as making it easy to analyze multivariate data together.  
+          <p><b>Motivation</b>:
+            <br>
+            Data Comets is an interactive tool for visualizing unmanned aerial vehicle (UAV) flight logs. UAVs can range from being sophisticated quadcopters made for capturing film and images, to a simple hobbyist remote control fixed wing plane. In either case data needs to be sent, received, and captured in order to for the UAV to operate as intended. Many sensors, and metrics are used to record this data in order to ensure that all UAV functions are working. In the event the UAV does not operate normally, it is important to be able to look at the flight log to identify not only what went wrong but when and where as well. Data Comets lets you visualize flight log data not only in time but also in space, as well as making it easy to analyze multivariate data together.
           </p>
           <p><b>Data</b>:
-          <br>
-          Our data is coming from a public database of UAV flight logs <a href="https://logs.px4.io/browse">LINK</a>. The logs come from UAVs using the PX4 flight control software. You can search this database for certain features you would want, such has flight time, UAV model, or number of errors. You can also view each log and all of its respective sensor and location data with auto 
-          generated plots. This allows us to preview the data to determine if it is worth downloading. We can download the raw flight logs as UGL files. These files are encrypted but we can use a available python cli tool to convert the UGL files to csv files. The tool generates several csv files for each of the different sensor or location data in the flight log. We identify and merge the data that we are particularly interested in. This includes data for; location, battery, gps signal, jamming sensor, vibrations, and cpu/ram usage. Our data is a mix of ordinal and quantitative data. </p>
-                    <p><b>Task Analysis</b>:
-          <br>
-          1. View UAV path in time and space
-                      <br>
-          2. View temporal abnormalities
-                      <br>
-          3. View multivariate UAV data
-                      <br>
-          4. Filter data based on time
-                      <br>
-          5. Link multiple data source based on time
+            <br>
+            Our data is coming from a public database of UAV flight logs <a href="https://logs.px4.io/browse">LINK</a>. The logs come from UAVs using the PX4 flight control software. You can search this database for certain features you would want, such has flight time, UAV model, or number of errors. You can also view each log and all of its respective sensor and location data with auto
+            generated plots. This allows us to preview the data to determine if it is worth downloading. We can download the raw flight logs as UGL files. These files are encrypted but we can use a available python cli tool to convert the UGL files to csv files. The tool generates several csv files for each of the different sensor or location data in the flight log. We identify and merge the data that we are particularly interested in. This includes data for; location, battery, gps signal, jamming sensor, vibrations, and cpu/ram usage. Our data is a mix of ordinal and quantitative data. </p>
+          <p><b>Task Analysis</b>:
+            <br>
+            1. View UAV path in time and space
+            <br>
+            2. View temporal abnormalities
+            <br>
+            3. View multivariate UAV data
+            <br>
+            4. Filter data based on time
+            <br>
+            5. Link multiple data source based on time
           </p>
-                    <p><b>Design Process</b>:
+          <p><b>Design Process</b>:
+            <br>
+            We started our design by reviewing the data we had available to us and identifying the task we wanted our visualization to accomplish. After this was completed we were able to start sketching potential ideas on how to visualize the data to meet our tasks. Some common themes of our sketches were various methods of encoding data on a line that would represent our UAV path. For example coloring the line based on some data or changing the width or shape of the line as well. Our sketches also included some type of dashboard view where the other types of data could be shown along with the path of the flight on the map. We originally intended to allow users to hit play and watch the flight path animate from start to finish. However, after implementing a brushing window to filter the portion of the path disabled we decided that being able to brush across the timeline was better than just watching an animation progress.
+          </p>
+          <p><b>Final Visualization</b>:
+            <br>
+            Our visualization tool was created using <a href=”https://d3js.org/”>D3.js </a>, <a href=”https://leafletjs.com/”>Leaflet.js </a>, and a helper plugin <a href=”https://github.com/teralytics/Leaflet.D3SvgOverlay”> Leaflet.D3SvgOverlay</a>. Our tool consists of three main views, the map, chart, and timeline views. The map view is the most prominent view of our tool and displays the path of the UAVs a series of lines. Each line represents one second of flight time. The map can be zoomed in and out to show different parts of the path. If the flight covers a large distance it is important to be able to zoom out enough to track those sections. At the same time if the UAV makes many smaller movements such as a hover, it is important to be able to zoom in enough to reveal those sections. After a certain zoom level the map will stop rendering and a grey background will be used, this is because the map will being to distort too much at higher zoom levels. The map view also contains three switches that enable other features. The first switch is “Ghost” this will show the full path as a dotted line no matter what data is selected. The next switch is “Width” this will encode the currently selected data as the width of the line as well as color. The last switch is “Scale” this will change the scale of the color and the width of the data based either on the full dataset “Global” or only the currently selected data “Local”. The next view is the chart view, this view contains three charts per tab and has four different tabs all with different data. You can select the radio buttons next to each chart to change which data is being encoded on the path for color and width. The last view is the timeline, in this view you can select the the portion of the data you want to be shown on the map and in the charts with the brushing window. You can slide the window across the timeline to animate the UAV flight path. In this view you can also see some metadata about the flight, as well as select from a list of other logs to view. </p> <p><b>Data Analysis</b>:
               <br>
-              We started our design by reviewing the data we had available to us and identifying the task we wanted our visualization to accomplish. After this was completed we were able to start sketching potential ideas on how to visualize the data to meet our tasks. Some common themes of our sketches were various methods of encoding data on a line that would represent our UAV path. For example coloring the line based on some data or changing the width or shape of the line as well. Our sketches also included some type of dashboard view where the other types of data could be shown along with the path of the flight on the map. We originally intended to allow users to hit play and watch the flight path animate from start to finish. However, after implementing a brushing window to filter the portion of the path disabled we decided that being able to brush across the timeline was better than just watching an animation progress. 
-          </p>
-                    <p><b>Final Visualization</b>:
-              <br>
-              Our visualization tool was created using <a href=”https://d3js.org/”>D3.js</a>,  <a href=”https://leafletjs.com/”>Leaflet.js</a>, and a helper plugin <a href=”https://github.com/teralytics/Leaflet.D3SvgOverlay”> Leaflet.D3SvgOverlay</a>. Our tool consists of three main views, the map, chart, and timeline views. The map view is the most prominent view of our tool and displays the path of the UAVs a series of lines. Each line represents one second of flight time. The map can be zoomed in and out to show different parts of the path. If the flight covers a large distance it is important to be able to zoom out enough to track those sections. At the same time if the UAV makes many smaller movements such as a hover, it is important to be able to zoom in enough to reveal those sections. After a certain zoom level the map will stop rendering and a grey background will be used, this is because the map will being to distort too much at higher zoom levels. The map view also contains three switches that enable other features. The first switch is “Ghost” this will show the full path as a dotted line no matter what data is selected. The next switch is “Width” this will encode the currently selected data as the width of the line as well as color. The last switch is “Scale” this will change the scale of the color and the width of the data based either on the full dataset “Global” or only the currently selected data “Local”. The next view is the chart view, this view contains three charts per tab and has four different tabs all with different data. You can select the radio buttons next to each chart to change which data is being encoded on the path for color and width. The last view is the timeline, in this view you can select the the portion of the data you want to be shown on the map and in the charts with the brushing window. You can slide the window across the timeline to animate the UAV flight path. In this view you can also see some metadata about the flight, as well as select from a list of other logs to view. 
-          </p>
-
-          <p><b>Data Analysis</b>:
-          <br>
-          Browsing through our select log option we visualized a variety of flights at different circumstances. The first option “Simple Path” visualizes a simple short flight where visualizing the full path is clear. The next option “Complex Overlapping Path” is a more complex flight with a lot of overlapping path segments. In this case we can use the brush interaction in the timeline to narrow the selected time window and slowly move it in order to visualize the flight path over time. Next for “Crash 1” and “Crash 2” options we visualized two flights where the UAV crashed. Hovering over near the end of the UAV’s path (right before the crash) we can see on the linked line charts on the right that for both “Crash 1” and “Crash 2” the measurements of Noise where very high and the signal strength (RSSI) were low. So we can hypothesize that those UAVs crashed because of bad signal. Finally the “Long Flight Time” option shows the visualization of a very long flight (about 1 hour). Here being able to limit the time window in the timeline is necessary in order to understand the UAV’s path over time.  
+              Browsing through our select log option we visualized a variety of flights at different circumstances. The first option “Simple Path” visualizes a simple short flight where visualizing the full path is clear. The next option “Complex Overlapping Path” is a more complex flight with a lot of overlapping path segments. In this case we can use the brush interaction in the timeline to narrow the selected time window and slowly move it in order to visualize the flight path over time. Next for “Crash 1” and “Crash 2” options we visualized two flights where the UAV crashed. Hovering over near the end of the UAV’s path (right before the crash) we can see on the linked line charts on the right that for both “Crash 1” and “Crash 2” the measurements of Noise where very high and the signal strength (RSSI) were low. So we can hypothesize that those UAVs crashed because of bad signal. Finally the “Long Flight Time” option shows the visualization of a very long flight (about 1 hour). Here being able to limit the time window in the timeline is necessary in order to understand the UAV’s path over time.
           </p>
 
           <p><b>Conclusion/Future Work</b>:
-          <br>
-          We have presented Data Comets, an interactive tool for visualizing unmanned aerial vehicle (UAV) flight logs. Data Comets displays the flight path together many other important metrics logged by a UAV. The tool is interactive allowing users to select a particular time window of interest and visualize the logged metrics in the selected window. The path is color encoded based on a user selected metric and can also be toggled to encode the selected metric by the width of the path.
+            <br>
+            We have presented Data Comets, an interactive tool for visualizing unmanned aerial vehicle (UAV) flight logs. Data Comets displays the flight path together many other important metrics logged by a UAV. The tool is interactive allowing users to select a particular time window of interest and visualize the logged metrics in the selected window. The path is color encoded based on a user selected metric and can also be toggled to encode the selected metric by the width of the path.
 
-          There are many potential future directions for Data Comets. Firstly, Data Comets could be better optimized to allow a more responsive experience for long flights. Currently it is hard to visualize flights with more than 5 thousand data points. Adding the functionality of automatically importing your flight log into our tool and analyzing its data would also be very beneficial as this process is currently done manually by us in this current version. Finally allowing users to customize the layout and encodings used by our tool more extensively would give the users a better experience allowing them to work in a more familiar framework.
+            There are many potential future directions for Data Comets. Firstly, Data Comets could be better optimized to allow a more responsive experience for long flights. Currently it is hard to visualize flights with more than 5 thousand data points. Adding the functionality of automatically importing your flight log into our tool and analyzing its data would also be very beneficial as this process is currently done manually by us in this current version. Finally allowing users to customize the layout and encodings used by our tool more extensively would give the users a better experience allowing them to work in a more familiar framework.
           </p>
 
 
@@ -216,13 +206,12 @@
         </div> -->
       </div>
     </div>
-  </div>
+  </div>\
+</body>
 
+</html>
 
 <!-- JS -->
 <script src="js/timeline.js"></script>
-<script src="js/line-charts.js"></script> 
+<script src="js/line-charts.js"></script>
 <script src="js/map.js"></script>
-
-</body>
-</html>
