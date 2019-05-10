@@ -226,7 +226,6 @@ function draw(data) {
       }
 
 
-
       var circle = sel.append("circle")
         .attr("cx", function (d) {
           return proj.latLngToLayerPoint(selectedData[selectedData.length - 1].endlatLng).x;
